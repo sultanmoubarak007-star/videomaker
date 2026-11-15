@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>VideoMaker Forge - Studio IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root { 
+  --bg: #050505; 
+  --panel: rgba(20, 20, 25, 0.8); 
+  --line: rgba(255, 255, 255, 0.15); 
+  --text: #ffffff; 
+  --text-dim: #a1a1aa;
+  --accent: #8b5cf6; 
+  --grad-1: #ec4899; 
+  --grad-2: #8b5cf6;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { 
+  font-family: 'Inter', sans-serif; 
+  background: var(--bg); 
+  color: var(--text); 
+  min-height: 100vh; 
+  padding-bottom: 50px; 
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.15), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.15), transparent 25%);
+  background-attachment: fixed;
+}
+
+header { 
+  display: flex; justify-content: space-between; align-items: center; 
+  padding: 1.5rem; max-width: 1000px; margin: 0 auto;
+}
+.logo { display: flex; align-items: center; gap: 0.75rem; font-weight: 800; font-size: 1.2rem; }
+.logo-icon { 
+  width: 36px; height: 36px; border-radius: 10px; 
+  background: linear-gradient(135deg, var(--grad-1), var(--grad-2)); 
+  display: flex; justify-content: center; align-items: center; font-size: 1.2rem;
+}
+
+.hero { text-align: center; padding: 1rem 1rem 2rem; max-width: 800px; margin: 0 auto; }
+.badge { 
+  display: inline-block; padding: 0.3rem 0.8rem; border-radius: 20px; 
+  background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.3);
+  font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px;
+}
+h1 { font-size: 2rem; font-weight: 800; line-height: 1.1; margin-bottom: 1rem; }
+.gradient-text { 
+  background: linear-gradient(135deg, var(--grad-1), var(--grad-2)); 
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+}
+.hero p { color: var(--text-dim); font-size: 0.95rem; max-width: 500px; margin: 0 auto; line-height: 1.5; }
+
+.container { max-width: 1000px; margin: 0 auto; padding: 1rem; display: grid; gap: 1.5rem; }
+@media (min-width: 768px) { .container { grid-template-columns: 1fr 1fr; } }
+
+.glass-card { 
+  background: var(--panel); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--line); border-radius: 20px; padding: 1.5rem; margin-bottom: 1rem;
+}
+.card-title { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+
+.format-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
+.format-card { 
+  background: rgba(255, 255, 255, 0.03); border: 1px solid var(--line); border-radius: 14px; 
+  padding: 1rem; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
+}
+.format-card.active { border-color: var(--accent); background: rgba(139, 92, 246, 0.15); }
+.format-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; margin-bottom: 0.75rem; }
+.format-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.2rem; }
+.format-desc { font-size: 0.7rem; color: var(--text-dim); }
+.format-ratio { position: absolute; bottom: 10px; right: 10px; font-size: 0.65rem; background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px; }
+
+label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text); }
+input, select, textarea { 
+  width: 100%; padding: 1rem; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--line); 
+  border-radius: 12px; color: white; font-family: inherit; font-size: 0.95rem; margin-bottom: 1.2rem; 
+}
+input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+textarea { resize: vertical; min-height: 100px; }
+
+button { 
+  cursor: pointer; padding: 1rem; border-radius: 12px; border: none; font-weight: 600; font-size: 1rem; 
+  transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 0.5rem; width: 100%;
+}
+.btn-primary { 
+  background: linear-gradient(135deg, var(--grad-1), var(--grad-2)); color: white; 
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+.btn-primary:disabled { opacity: 0.5; }
+
+#settingsContent { display: none; margin-top: 1rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+.arrow { transition: transform 0.3s; }
+.arrow.open { transform: rotate(180deg); }
+
+.scene-item { background: rgba(0,0,0,0.3); border: 1px solid var(--line); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; display: flex; gap: 1rem; }
+.scene-media { width: 80px; height: 142px; background: #000; border-radius: 8px; flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: #555; }
+.scene-media img, .scene-media video { width: 100%; height: 100%; object-fit: cover; }
+.scene-content { flex: 1; }
+.scene-content textarea { min-height: 60px; font-size: 0.8rem; padding: 0.5rem; margin-bottom: 0.5rem; }
+#previewArea { display: none; flex-direction: column; align-items: center; }
+#videoCanvas { width: 100%; max-width: 300px; aspect-ratio: 9/16; background: #000; border-radius: 12px; margin-bottom: 1rem; }
+
+.spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; display: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading .spinner { display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">✨</div>
+    VideoMaker Forge
+  </div>
+</header>
+
+<div class="hero">
+  <span class="badge">✨ EXCLUSIF</span>
+  <h1>Crée n'importe quelle<br><span class="gradient-text">vidéo, au niveau</span><br><span class="gradient-text">professionnel</span></h1>
+</div>
+
+<div class="container">
+  <div class="glass-card" style="grid-column: 1 / -1;">
+    <div class="card-title" id="toggleSettings" style="cursor: pointer;">
+      <span>🔑 Configuration des APIs</span>
+      <span class="arrow" id="settingsArrow">▼</span>
+    </div>
+    <div id="settingsContent">
+      <label>Clé API Agnes (sk-...)</label>
+      <input type="password" id="agnesApiKey" placeholder="sk-...">
+      
+      <label>URL Cloudflare TTS</label>
+      <input type="text" id="ttsUrl" value="https://edge-tts-v2.sultanmoubarak007.workers.dev/">
+      
+      <label>Lip-Sync (Optionnel)</label>
+      <select id="lipsyncService">
+        <option value="none">Aucun (Zoom Ken Burns)</option>
+        <option value="did">D-ID (Qualité studio)</option>
+      </select>
+      
+      <label>Clé API D-ID</label>
+      <input type="password" id="didApiKey" placeholder="API_USERNAME:API_PASSWORD">
+      <p style="font-size:0.75rem; color:#a1a1aa; text-align:center;">Les clés sont sauvegardées dans votre navigateur.</p>
+    </div>
+  </div>
+
+  <div class="left-col">
+    <div class="glass-card">
+      <div class="card-title">1. Format</div>
+      <div class="format-grid" id="formatGrid">
+        <div class="format-card active" data-value="TikTok Storytelling">
+          <div class="format-icon" style="background: rgba(236, 72, 153, 0.2); color: #ec4899;">🎵</div>
+          <div class="format-title">TikTok / Reels</div>
+          <div class="format-ratio">9:16</div>
+        </div>
+        <div class="format-card" data-value="YouTube">
+          <div class="format-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">▶️</div>
+          <div class="format-title">YouTube</div>
+          <div class="format-ratio">16:9</div>
+        </div>
+        <div class="format-card" data-value="Documentaire">
+          <div class="format-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">🎥</div>
+          <div class="format-title">Documentaire</div>
+          <div class="format-ratio">16:9</div>
+        </div>
+        <div class="format-card" data-value="Dessin Animé">
+          <div class="format-icon" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">🎨</div>
+          <div class="format-title">Dessin animé</div>
+          <div class="format-ratio">16:9</div>
+        </div>
+      </div>
+
+      <div class="card-title">2. Détails</div>
+      
+      <label>Langue de la vidéo</label>
+      <select id="langSelect">
+        <option value="Français">Français</option>
+        <option value="Anglais">Anglais</option>
+        <option value="Espagnol">Espagnol</option>
+        <option value="Allemand">Allemand</option>
+        <option value="Italien">Italien</option>
+        <option value="Portugais">Portugais</option>
+      </select>
+      
+      <label>Idée / Sujet</label>
+      <textarea id="topicInput" placeholder="Ex: L'histoire d'un chat astronaute..."></textarea>
+      
+      <label>Scènes (max 6)</label>
+      <input type="number" id="sceneCount" value="3" min="1" max="6">
+      
+      <button id="generateScriptBtn" class="btn-primary"><span class="spinner"></span> Générer le scénario</button>
+    </div>
+  </div>
+
+  <div class="right-col">
+    <div id="workspace" class="glass-card" style="display:none; margin-bottom: 1.5rem;">
+      <div class="card-title">3. Médias</div>
+      <div id="scenesContainer"></div>
+      <button id="generateAssetsBtn" class="btn-primary" style="margin-top: 1rem;"><span class="spinner"></span> Générer les médias</button>
+    </div>
+
+    <div id="previewArea" class="glass-card">
+      <div class="card-title">4. Rendu final</div>
+      <canvas id="videoCanvas" width="1080" height="1920"></canvas>
+      <button id="renderBtn" class="btn-primary"><span class="spinner"></span> Exporter la vidéo</button>
+      <div id="renderStatus" style="font-size: 0.85rem; color: #a1a1aa; margin-top: 1rem; text-align: center;">Prêt</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const toggleSettings = document.getElementById('toggleSettings');
+const settingsContent = document.getElementById('settingsContent');
+const settingsArrow = document.getElementById('settingsArrow');
+
+toggleSettings.addEventListener('click', () => {
+  if (settingsContent.style.display === 'block') {
+    settingsContent.style.display = 'none';
+    settingsArrow.classList.remove('open');
+  } else {
+    settingsContent.style.display = 'block';
+    settingsArrow.classList.add('open');
+  }
+});
+
+const AGNES_BASE = 'https://apihub.agnes-ai.com/v1';
+const AGNES_MODEL = 'agnes-3.0-flash';
+const AGNES_IMG_MODEL = 'agnes-image-2.5-flash';
+const DID_API = 'https://api.d-id.com';
+
+const generateScriptBtn = document.getElementById('generateScriptBtn');
+const generateAssetsBtn = document.getElementById('generateAssetsBtn');
+const workspace = document.getElementById('workspace');
+const scenesContainer = document.getElementById('scenesContainer');
+const previewArea = document.getElementById('previewArea');
+const renderBtn = document.getElementById('renderBtn');
+const renderStatus = document.getElementById('renderStatus');
+const formatGrid = document.getElementById('formatGrid');
+
+let currentScript = [];
+let projectAssets = [];
+let selectedGenre = "TikTok Storytelling";
+
+try {
+  const keys = ['agnesApiKey', 'ttsUrl', 'didApiKey'];
+  keys.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      const saved = localStorage.getItem(id);
+      if (saved) el.value = saved;
+      el.addEventListener('change', (e) => localStorage.setItem(id, e.target.value.trim()));
+    }
+  });
+} catch(e) { console.log("Stockage local bloqué"); }
+
+formatGrid.addEventListener('click', (e) => {
+  const card = e.target.closest('.format-card');
+  if (!card) return;
+  document.querySelectorAll('.format-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  selectedGenre = card.dataset.value;
+});
+
+function showLoading(btn, text) {
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.dataset.originalText = btn.innerHTML;
+  btn.innerHTML = `<span class="spinner"></span> ${text}`;
+}
+function stopLoading(btn) {
+  btn.disabled = false;
+  btn.classList.remove('loading');
+  btn.innerHTML = btn.dataset.originalText;
+}
+
+function getVoiceName(lang) {
+  switch(lang) {
+    case 'Anglais': return 'en-US-JennyNeural';
+    case 'Espagnol': return 'es-ES-ElviraNeural';
+    case 'Allemand': return 'de-DE-KatjaNeural';
+    case 'Italien': return 'it-IT-ElsaNeural';
+    case 'Portugais': return 'pt-BR-FranciscaNeural';
+    default: return 'fr-FR-DeniseNeural';
+  }
+}
+
+generateScriptBtn.addEventListener('click', async () => {
+  const apiKey = document.getElementById('agnesApiKey').value.trim();
+  if (!apiKey) { alert("Veuillez ouvrir la configuration en haut et entrer votre clé Agnes."); return; }
+  
+  const lang = document.getElementById('langSelect').value;
+  const topic = document.getElementById('topicInput').value.trim();
+  const count = parseInt(document.getElementById('sceneCount').value);
+  if (!topic) { alert("Veuillez écrire un sujet."); return; }
+
+  showLoading(generateScriptBtn, "Rédaction...");
+  const prompt = `Tu es un scénariste expert. Genre: ${selectedGenre}. Langue de sortie STRICTE: ${lang}. Sujet: ${topic}.
+Découpe en ${count} scènes. Retourne UNIQUEMENT un tableau JSON valide:
+[{"scene_number": 1, "narration_text": "...", "visual_prompt": "English prompt for a 9:16 image..."}]`;
+
+  try {
+    const res = await fetch(`${AGNES_BASE}/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({ model: AGNES_MODEL, messages: [{ role: 'user', content: prompt }], temperature: 0.7, max_tokens: 2000 })
+    });
+    if (!res.ok) throw new Error(`Erreur API: ${res.status}`);
+    const data = await res.json();
+    let content = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
+    currentScript = JSON.parse(content);
+    renderScenesUI();
+    workspace.style.display = 'block';
+    previewArea.style.display = 'flex';
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  } catch (e) {
+    alert("Erreur scénario: " + e.message);
+  } finally {
+    stopLoading(generateScriptBtn);
+  }
+});
+
+function renderScenesUI() {
+  scenesContainer.innerHTML = '';
+  currentScript.forEach((scene, index) => {
+    const div = document.createElement('div');
+    div.className = 'scene-item';
+    div.innerHTML = `
+      <div class="scene-media" id="media-${index}">Image ${scene.scene_number}</div>
+      <div class="scene-content">
+        <label>Texte</label>
+        <textarea id="text-${index}">${scene.narration_text}</textarea>
+        <label>Prompt Visuel</label>
+        <textarea id="prompt-${index}" style="font-size:0.7rem; color:#94a3b8;">${scene.visual_prompt}</textarea>
+        <audio id="audio-${index}" controls style="display:none; width:100%; height:30px; margin-top:0.5rem;"></audio>
+      </div>`;
+    scenesContainer.appendChild(div);
+  });
+}
+
+generateAssetsBtn.addEventListener('click', async () => {
+  const agnesKey = document.getElementById('agnesApiKey').value.trim();
+  const ttsUrl = document.getElementById('ttsUrl').value.trim();
+  const lang = document.getElementById('langSelect').value;
+  const lipsyncService = document.getElementById('lipsyncService').value;
+  const didKey = document.getElementById('didApiKey').value.trim();
+
+  if (!agnesKey || !ttsUrl) { alert("Clés manquantes. Ouvrez la configuration."); return; }
+
+  showLoading(generateAssetsBtn, "Génération...");
+  projectAssets = [];
+
+  for (let i = 0; i < currentScript.length; i++) {
+    const text = document.getElementById(`text-${i}`).value;
+    const prompt = document.getElementById(`prompt-${i}`).value;
+    
+    renderStatus.textContent = `Image ${i+1}/${currentScript.length}...`;
+    let imageUrl = '';
+    try {
+      const imgRes = await fetch(`${AGNES_BASE}/images/generations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${agnesKey}` },
+        body: JSON.stringify({ model: AGNES_IMG_MODEL, prompt: prompt, size: '1K', ratio: '9:16', extra_body: { response_format: 'url' } })
+      });
+      const imgData = await imgRes.json();
+      imageUrl = imgData.data[0].url;
+    } catch (e) { alert(`Erreur image ${i+1}`); continue; }
+
+    renderStatus.textContent = `Voix ${i+1}/${currentScript.length}...`;
+    let audioUrl = '';
+    try {
+      const ttsRes = await fetch(ttsUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input: text, voice: getVoiceName(lang), speed: 1.0 })
+      });
+      const audioBlob = await ttsRes.blob();
+      audioUrl = URL.createObjectURL(audioBlob);
+    } catch (e) { alert(`Erreur voix ${i+1}`); continue; }
+
+    let videoUrl = null;
+    if (lipsyncService === 'did' && didKey) {
+      renderStatus.textContent = `Animation ${i+1}...`;
+      try { videoUrl = await generateDIDVideo(imageUrl, text, didKey, getVoiceName(lang)); } catch (e) {}
+    }
+
+    const mediaContainer = document.getElementById(`media-${i}`);
+    if (videoUrl) {
+      mediaContainer.innerHTML = `<video src="${videoUrl}" controls muted style="width:100%; height:100%; object-fit:cover;"></video>`;
+    } else {
+      mediaContainer.innerHTML = `<img src="${imageUrl}" crossorigin="anonymous" style="width:100%; height:100%; object-fit:cover;">`;
+    }
+
+    const audioEl = document.getElementById(`audio-${i}`);
+    audioEl.src = audioUrl;
+    audioEl.style.display = 'block';
+
+    projectAssets.push({ text, imageUrl, audioUrl, videoUrl });
+  }
+
+  stopLoading(generateAssetsBtn);
+  renderStatus.textContent = "Médias prêts ! Vous pouvez exporter.";
+});
+
+async function generateDIDVideo(imageUrl, text, apiKey, voiceId) {
+  const res = await fetch(`${DID_API}/talks`, {
+    method: 'POST',
+    headers: { 'Authorization': `Basic ${apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ source_url: imageUrl, script: { type: 'text', input: text, provider: { type: 'microsoft', voice_id: voiceId } } })
+  });
+  const talk = await res.json();
+  for (let i = 0; i < 30; i++) {
+    await new Promise(r => setTimeout(r, 2000));
+    const statusRes = await fetch(`${DID_API}/talks/${talk.id}`, { headers: { 'Authorization': `Basic ${apiKey}` } });
+    const statusData = await statusRes.json();
+    if (statusData.status === 'done') return statusData.result_url;
+  }
+  throw new Error("Timeout D-ID");
+}
+
+const canvas = document.getElementById('videoCanvas');
+const ctx = canvas.getContext('2d');
+
+renderBtn.addEventListener('click', async () => {
+  if (projectAssets.length === 0) { alert("Générez les médias d'abord."); return; }
+  showLoading(renderBtn, "Rendu...");
+  renderStatus.textContent = "Initialisation...";
+
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const dest = audioCtx.createMediaStreamDestination();
+  const videoStream = canvas.captureStream(30);
+  const combinedStream = new MediaStream([...videoStream.getVideoTracks(), ...dest.stream.getAudioTracks()]);
+
+  let mediaRecorder, chunks = [];
+  try { mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm;codecs=vp9,opus' }); } 
+  catch (e) { mediaRecorder = new MediaRecorder(combinedStream); }
+
+  mediaRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+  mediaRecorder.onstop = () => {
+    const blob = new Blob(chunks, { type: 'video/webm' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'videomaker-forge.webm';
+    a.click();
+    stopLoading(renderBtn);
+    renderStatus.textContent = "Vidéo exportée !";
+  };
+  mediaRecorder.start();
+
+  for (let i = 0; i < projectAssets.length; i++) {
+    const asset = projectAssets[i];
+    renderStatus.textContent = `Rendu ${i+1}/${projectAssets.length}...`;
+    
+    let mediaEl;
+    if (asset.videoUrl) {
+      mediaEl = document.createElement('video');
+      mediaEl.src = asset.videoUrl; mediaEl.crossOrigin = "anonymous"; mediaEl.muted = true; mediaEl.playsInline = true;
+    } else {
+      mediaEl = new Image(); mediaEl.crossOrigin = "anonymous"; mediaEl.src = asset.imageUrl;
+    }
+    await new Promise(r => { mediaEl.onload = r; mediaEl.oncanplay = r; setTimeout(r, 5000); });
+
+    const audio = new Audio(asset.audioUrl);
+    const audioSource = audioCtx.createMediaElementSource(audio);
+    audioSource.connect(dest);
+    if(asset.videoUrl) mediaEl.play().catch(()=>{});
+    audio.play().catch(()=>{});
+
+    const duration = audio.duration * 1000;
+    const startTime = performance.now();
+
+    await new Promise(resolve => {
+      function drawFrame(time) {
+        const elapsed = time - startTime;
+        if (elapsed >= duration || audio.ended) { resolve(); return; }
+        
+        const progress = elapsed / duration;
+        if (asset.videoUrl) {
+          ctx.drawImage(mediaEl, 0, 0, canvas.width, canvas.height);
+        } else {
+          const scale = 1 + (progress * 0.1);
+          ctx.save(); ctx.translate(canvas.width/2, canvas.height/2); ctx.scale(scale, scale);
+          ctx.drawImage(mediaEl, -canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
+          ctx.restore();
+        }
+
+        const gradient = ctx.createLinearGradient(0, canvas.height - 400, 0, canvas.height);
+        gradient.addColorStop(0, 'rgba(0,0,0,0)'); gradient.addColorStop(1, 'rgba(0,0,0,0.8)');
+        ctx.fillStyle = gradient; ctx.fillRect(0, canvas.height - 400, canvas.width, 400);
+
+        ctx.fillStyle = 'white'; ctx.font = 'bold 50px Inter, sans-serif'; ctx.textAlign = 'center';
+        const words = asset.text.split(' ');
+        let line = ''; let y = canvas.height - 150;
+        for (let n = 0; n < words.length; n++) {
+          const testLine = line + words[n] + ' ';
+          if (ctx.measureText(testLine).width > 900 && n > 0) {
+            ctx.fillText(line, canvas.width/2, y); line = words[n] + ' '; y += 60;
+          } else { line = testLine; }
+        }
+        ctx.fillText(line, canvas.width/2, y);
+        requestAnimationFrame(drawFrame);
+      }
+      requestAnimationFrame(drawFrame);
+    });
+  }
+  mediaRecorder.stop();
+});
+</script>
+</body>
+</html>
