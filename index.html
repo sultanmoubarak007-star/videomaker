@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>VideoMaker Forge - Ultimate Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root { 
+  --bg: #050505; --panel: rgba(20, 20, 25, 0.85); --line: rgba(255, 255, 255, 0.15); 
+  --text: #ffffff; --text-dim: #a1a1aa; --accent: #8b5cf6; --grad-1: #ec4899; --grad-2: #8b5cf6;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 50px; background-image: radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.15), transparent 25%), radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.15), transparent 25%); background-attachment: fixed; }
+
+header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; max-width: 1000px; margin: 0 auto; position: sticky; top: 0; z-index: 100; background: rgba(5,5,5,0.8); backdrop-filter: blur(10px); }
+.logo { display: flex; align-items: center; gap: 0.75rem; font-weight: 800; font-size: 1.2rem; }
+.logo-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--grad-1), var(--grad-2)); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
+.menu-btn { background: rgba(255,255,255,0.1); border: 1px solid var(--line); color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; display: flex; justify-content: center; align-items: center; cursor: pointer; line-height: 1; padding-bottom: 5px; }
+
+#sidebar { position: fixed; top: 0; right: -100%; width: 85%; max-width: 350px; height: 100vh; background: var(--panel); backdrop-filter: blur(20px); border-left: 1px solid var(--line); z-index: 1000; transition: right 0.3s; padding: 2rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; }
+#sidebar.open { right: 0; }
+#sidebar-close { position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+.sidebar-item { background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px; font-size: 0.9rem; cursor: pointer; border: 1px solid transparent; }
+.sidebar-item:hover { border-color: var(--accent); background: rgba(139, 92, 246, 0.1); }
+
+.tabs { display: flex; gap: 0.5rem; max-width: 1000px; margin: 0 auto 1rem; padding: 0 1rem; overflow-x: auto; }
+.tab-btn { padding: 0.8rem 1rem; background: rgba(255,255,255,0.05); border: 1px solid var(--line); color: white; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; white-space: nowrap; }
+.tab-btn.active { background: var(--accent); border-color: var(--accent); }
+
+.section-content { display: none; }
+.section-content.active { display: block; }
+.container { max-width: 1000px; margin: 0 auto; padding: 1rem; display: grid; gap: 1.5rem; }
+@media (min-width: 768px) { .container { grid-template-columns: 1fr 1fr; } }
+.glass-card { background: var(--panel); backdrop-filter: blur(16px); border: 1px solid var(--line); border-radius: 20px; padding: 1.5rem; margin-bottom: 1rem; }
+.card-title { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+
+label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text); }
+input, select, textarea { width: 100%; padding: 1rem; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--line); border-radius: 12px; color: white; font-family: inherit; font-size: 0.95rem; margin-bottom: 1.2rem; }
+input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+textarea { resize: vertical; min-height: 60px; }
+button { cursor: pointer; padding: 1rem; border-radius: 12px; border: none; font-weight: 600; font-size: 1rem; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 0.5rem; width: 100%; color: white; }
+.btn-primary { background: linear-gradient(135deg, var(--grad-1), var(--grad-2)); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); }
+.btn-publish { background: #10b981; margin-top: 10px; }
+
+.chat-container { grid-column: 1 / -1; display: flex; flex-direction: column; height: 60vh; }
+.chat-messages { flex: 1; overflow-y: auto; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 1rem; border: 1px solid var(--line); }
+.msg { max-width: 85%; padding: 0.8rem 1rem; border-radius: 12px; font-size: 0.9rem; line-height: 1.4; }
+.msg.user { background: var(--accent); align-self: flex-end; border-bottom-right-radius: 2px; }
+.msg.agent { background: rgba(255,255,255,0.1); align-self: flex-start; border-bottom-left-radius: 2px; }
+.chat-input-area { display: flex; gap: 0.5rem; }
+.chat-input-area input { margin-bottom: 0; }
+
+.folders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
+.folder { background: rgba(255,255,255,0.05); border: 1px solid var(--line); border-radius: 14px; padding: 1.5rem 1rem; text-align: center; cursor: pointer; transition: 0.2s; }
+.folder:hover { border-color: var(--accent); background: rgba(139, 92, 246, 0.1); }
+.folder-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+.folder-title { font-weight: 700; font-size: 0.9rem; }
+.folder-count { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.3rem; }
+.task-item { background: rgba(0,0,0,0.3); border: 1px solid var(--line); border-radius: 8px; padding: 0.8rem; margin-bottom: 0.5rem; font-size: 0.8rem; display: flex; justify-content: space-between; }
+.task-status { color: var(--grad-1); font-weight: bold; }
+
+#settingsContent { display: none; margin-top: 1rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+.arrow { transition: transform 0.3s; }
+.arrow.open { transform: rotate(180deg); }
+
+.scene-item { background: rgba(0,0,0,0.3); border: 1px solid var(--line); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; display: flex; gap: 1rem; }
+.scene-media { width: 80px; height: 142px; background: #000; border-radius: 8px; flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: #555; }
+.scene-media img, .scene-media video { width: 100%; height: 100%; object-fit: cover; }
+.scene-content { flex: 1; }
+.scene-content textarea { min-height: 50px; font-size: 0.8rem; padding: 0.5rem; margin-bottom: 0.5rem; }
+#videoCanvas { width: 100%; max-width: 300px; aspect-ratio: 9/16; background: #000; border-radius: 12px; margin-bottom: 1rem; }
+
+.spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; display: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading .spinner { display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><div class="logo-icon">✨</div>VideoMaker Ultimate</div>
+  <button class="menu-btn" id="openMenuBtn">⋮</button>
+</header>
+
+<div id="sidebar">
+  <button id="sidebar-close">✕</button>
+  <div class="card-title">Mon Espace</div>
+  <div class="sidebar-item" onclick="switchTab('projects'); closeMenu();">📁 Mes Projets</div>
+  <div class="sidebar-item" onclick="alert('Calendrier de publication (Simulé)')">📅 Calendrier</div>
+  <div class="sidebar-item" onclick="alert('VideoMaker Ultimate v6.0')">⚙️ Aide & Réglages</div>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('studio')">🎬 Studio Manuel</button>
+  <button class="tab-btn" onclick="switchTab('agent')">🤖 Agent Planificateur</button>
+  <button class="tab-btn" onclick="switchTab('projects')">📁 Mes Projets</button>
+</div>
+
+<!-- ================= STUDIO ================= -->
+<div id="studioSection" class="section-content active">
+  <div class="container">
+    <div class="glass-card" style="grid-column: 1 / -1;">
+      <div class="card-title" id="toggleSettings" style="cursor: pointer;"><span>🔑 Clés API</span><span class="arrow" id="settingsArrow">▼</span></div>
+      <div id="settingsContent">
+        <label>Clé API Agnes (sk-...)</label>
+        <input type="password" id="agnesApiKey" placeholder="sk-...">
+        <label>URL Cloudflare TTS</label>
+        <input type="text" id="ttsUrl" value="https://edge-tts-v2.sultanmoubarak007.workers.dev/">
+      </div>
+    </div>
+
+    <div class="left-col">
+      <div class="glass-card">
+        <div class="card-title">Paramètres</div>
+        
+        <label>Format (Dossier)</label>
+        <select id="genreSelect">
+          <option value="TikTok">TikTok</option>
+          <option value="Facebook">Facebook</option>
+          <option value="YouTube">YouTube</option>
+          <option value="Dessin Animé">Dessin Animé</option>
+          <option value="Documentaire">Documentaire</option>
+          <option value="Histoire">Histoire</option>
+          <option value="Publicité">Publicité</option>
+        </select>
+
+        <label>🤖 Agent IA (Humain virtuel)</label>
+        <select id="agentSelect">
+          <option value="Photorealistic European woman">Européen (Femme)</option>
+          <option value="Photorealistic European man">Européen (Homme)</option>
+          <option value="Photorealistic African woman">Africain (Femme)</option>
+          <option value="Photorealistic African man">Africain (Homme)</option>
+          <option value="Photorealistic Asian woman">Asiatique (Femme)</option>
+          <option value="Photorealistic Middle Eastern man">Moyen-Orient (Homme)</option>
+          <option value="Photorealistic Latino man">Américain Latino (Homme)</option>
+          <option value="Photorealistic South American woman">Sud-Américain (Femme)</option>
+          <option value="Photorealistic Mixed-race woman">Métis (Femme)</option>
+        </select>
+
+        <label>Langue de la vidéo</label>
+        <select id="langSelect">
+          <option value="Français">Français</option>
+          <option value="Anglais">Anglais</option>
+          <option value="Espagnol">Espagnol</option>
+          <option value="Allemand">Allemand</option>
+          <option value="Italien">Italien</option>
+          <option value="Portugais">Portugais</option>
+        </select>
+
+        <label>Sujet / Script</label>
+        <textarea id="topicInput" placeholder="Ex: Vente de cosmétiques bio..."></textarea>
+        
+        <label>Scènes (max 6)</label>
+        <input type="number" id="sceneCount" value="2" min="1" max="6">
+
+        <button id="generateScriptBtn" class="btn-primary"><span class="spinner"></span> Générer le scénario</button>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div id="workspace" class="glass-card" style="display:none;">
+        <div class="card-title">Médias</div>
+        <div id="scenesContainer"></div>
+        <button id="generateAssetsBtn" class="btn-primary">Générer les médias</button>
+      </div>
+      <div id="previewArea" class="glass-card">
+        <div class="card-title">Rendu final</div>
+        <canvas id="videoCanvas" width="1080" height="1920"></canvas>
+        <button id="renderBtn" class="btn-primary"><span class="spinner"></span> Exporter la vidéo</button>
+        <button id="publishBtn" class="btn-publish" style="display:none;" onclick="saveProjectToFolder()">🚀 Publier & Sauvegarder</button>
+        <div id="renderStatus" style="font-size: 0.85rem; color: #a1a1aa; margin-top: 1rem; text-align: center;">Prêt</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= AGENT ================= -->
+<div id="agentSection" class="section-content">
+  <div class="container">
+    <div class="glass-card chat-container">
+      <div class="card-title">🤖 Agent Planificateur</div>
+      <div style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 1rem;">
+        Donnez des ordres ! Ex: <i>"Demain à 21h, crée une vidéo TikTok sur le café"</i>.
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="msg agent">Bonjour ! Je suis votre agent. Dites-moi quoi faire et quand le faire.</div>
+      </div>
+      <div class="chat-input-area">
+        <input type="text" id="chatInput" placeholder="Donnez un ordre à l'agent...">
+        <button id="sendChatBtn" class="btn-primary" style="width:auto;">Envoyer</button>
+      </div>
+    </div>
+    <div class="glass-card" style="grid-column: 1 / -1;">
+      <div class="card-title">⏳ Tâches Programmées</div>
+      <div id="tasksList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= PROJETS ================= -->
+<div id="projectsSection" class="section-content">
+  <div class="container" style="grid-template-columns: 1fr;">
+    <div class="glass-card">
+      <div class="card-title">📁 Mes Dossiers</div>
+      <div class="folders-grid" id="foldersGrid"></div>
+    </div>
+    <div id="folderContent" class="glass-card" style="display:none;">
+      <div class="card-title" id="folderTitle"></div>
+      <div id="folderVideos"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// --- NAVIGATION & MENU ---
+function switchTab(tab) {
+  document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tab + 'Section').classList.add('active');
+  event.target.classList.add('active');
+  if(tab === 'projects') renderFolders();
+  if(tab === 'agent') renderTasks();
+}
+const sidebar = document.getElementById('sidebar');
+document.getElementById('openMenuBtn').addEventListener('click', () => sidebar.classList.add('open'));
+document.getElementById('sidebar-close').addEventListener('click', () => sidebar.classList.remove('open'));
+function closeMenu() { sidebar.classList.remove('open'); }
+
+// --- CONFIG ---
+const AGNES_BASE = 'https://apihub.agnes-ai.com/v1';
+const AGNES_MODEL = 'agnes-3.0-flash';
+const AGNES_IMG_MODEL = 'agnes-image-2.5-flash';
+const FOLDERS = ['TikTok', 'Facebook', 'YouTube', 'Dessin Animé', 'Documentaire', 'Histoire', 'Publicité'];
+
+try {
+  ['agnesApiKey', 'ttsUrl'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      const saved = localStorage.getItem(id);
+      if (saved) el.value = saved;
+      el.addEventListener('change', (e) => localStorage.setItem(id, e.target.value.trim()));
+    }
+  });
+} catch(e) {}
+if(!localStorage.getItem('vm_projects')) localStorage.setItem('vm_projects', JSON.stringify({}));
+if(!localStorage.getItem('vm_tasks')) localStorage.setItem('vm_tasks', JSON.stringify([]));
+
+// --- VOIX ---
+function getVoiceName(lang) {
+  switch(lang) {
+    case 'Anglais': return 'en-US-JennyNeural';
+    case 'Espagnol': return 'es-ES-ElviraNeural';
+    case 'Allemand': return 'de-DE-KatjaNeural';
+    case 'Italien': return 'it-IT-ElsaNeural';
+    case 'Portugais': return 'pt-BR-FranciscaNeural';
+    default: return 'fr-FR-DeniseNeural';
+  }
+}
+
+// --- AGENT CHAT & PLANIFICATEUR ---
+const sendChatBtn = document.getElementById('sendChatBtn');
+const chatInput = document.getElementById('chatInput');
+const chatMessages = document.getElementById('chatMessages');
+
+sendChatBtn.addEventListener('click', async () => {
+  const text = chatInput.value.trim();
+  if (!text) return;
+  const apiKey = document.getElementById('agnesApiKey').value.trim();
+  if (!apiKey) { alert("Ajoutez votre clé Agnes."); return; }
+
+  chatMessages.innerHTML += `<div class="msg user">${text}</div>`;
+  chatInput.value = '';
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  
+  const typingId = 'typing_' + Date.now();
+  chatMessages.innerHTML += `<div class="msg agent" id="${typingId}">🤖 Analyse en cours...</div>`;
+
+  try {
+    const now = new Date();
+    const prompt = `Tu es un agent IA de planification. Nous sommes le ${now.toLocaleString()}.
+L'utilisateur donne un ordre. Extrais :
+1. Le type de vidéo (TikTok, Facebook, YouTube, Dessin Animé, Documentaire, Histoire, Publicité)
+2. Le sujet exact
+3. L'heure précise d'exécution (timestamp en ms).
+Réponds UNIQUEMENT en JSON valide :
+{ "platform": "...", "topic": "...", "timestamp": 1234567890, "message": "Confirmation" }
+Ordre : "${text}"`;
+
+    const res = await fetch(`${AGNES_BASE}/chat/completions`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({ model: AGNES_MODEL, messages: [{ role: 'user', content: prompt }], temperature: 0.2 })
+    });
+    const data = await res.json();
+    let content = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
+    const task = JSON.parse(content);
+
+    let tasks = JSON.parse(localStorage.getItem('vm_tasks'));
+    task.id = Date.now(); task.status = 'En attente';
+    tasks.push(task);
+    localStorage.setItem('vm_tasks', JSON.stringify(tasks));
+
+    document.getElementById(typingId).textContent = task.message + ` (Programmé : ${new Date(task.timestamp).toLocaleString()})`;
+    renderTasks();
+  } catch (e) {
+    document.getElementById(typingId).textContent = "Désolé, je n'ai pas compris l'heure ou la demande.";
+  }
+});
+
+function renderTasks() {
+  const tasksList = document.getElementById('tasksList');
+  let tasks = JSON.parse(localStorage.getItem('vm_tasks') || '[]');
+  if(tasks.length === 0) { tasksList.innerHTML = "<div style='font-size:0.8rem; color:#a1a1aa;'>Aucune tâche.</div>"; return; }
+  tasksList.innerHTML = tasks.map(t => `
+    <div class="task-item">
+      <div><strong>${t.platform}</strong> : ${t.topic}<br><span style="font-size:0.7rem; color:#a1a1aa;">${new Date(t.timestamp).toLocaleString()}</span></div>
+      <div class="task-status">${t.status}</div>
+    </div>
+  `).join('');
+}
+
+// MOTEUR D'EXÉCUTION (CRON)
+setInterval(() => {
+  let tasks = JSON.parse(localStorage.getItem('vm_tasks') || '[]');
+  const now = Date.now();
+  let updated = false;
+
+  tasks.forEach(task => {
+    if (task.status === 'En attente' && now >= task.timestamp) {
+      task.status = 'En cours...';
+      updated = true;
+      executeAgentTask(task);
+    }
+  });
+  if (updated) localStorage.setItem('vm_tasks', JSON.stringify(tasks));
+  renderTasks();
+}, 10000);
+
+async function executeAgentTask(task) {
+  alert(`🤖 L'Agent démarre : Vidéo ${task.platform} sur "${task.topic}"`);
+  switchTab('studio'); 
+  document.getElementById('genreSelect').value = task.platform;
+  document.getElementById('topicInput').value = task.topic;
+  document.getElementById('generateScriptBtn').click();
+  
+  setTimeout(() => {
+    let tasks = JSON.parse(localStorage.getItem('vm_tasks') || '[]');
+    const t = tasks.find(x => x.id === task.id);
+    if (t) { t.status = 'Généré (À exporter)'; localStorage.setItem('vm_tasks', JSON.stringify(tasks)); renderTasks(); }
+  }, 10000);
+}
+
+// --- DOSSIERS PROJETS ---
+function renderFolders() {
+  const grid = document.getElementById('foldersGrid');
+  const projects = JSON.parse(localStorage.getItem('vm_projects') || '{}');
+  grid.innerHTML = FOLDERS.map(f => {
+    const count = (projects[f] || []).length;
+    const icon = f === 'TikTok' ? '🎵' : f === 'YouTube' ? '▶️' : f === 'Facebook' ? '📘' : f === 'Publicité' ? '📢' : '📁';
+    return `
+      <div class="folder" onclick="openFolder('${f}')">
+        <div class="folder-icon">${icon}</div>
+        <div class="folder-title">${f}</div>
+        <div class="folder-count">${count} vidéo(s)</div>
+      </div>
+    `;
+  }).join('');
+}
+function openFolder(folderName) {
+  document.getElementById('folderContent').style.display = 'block';
+  document.getElementById('folderTitle').textContent = `Dossier : ${folderName}`;
+  const projects = JSON.parse(localStorage.getItem('vm_projects') || '{}');
+  const vids = projects[folderName] || [];
+  document.getElementById('folderVideos').innerHTML = vids.length === 0 ? "<p style='font-size:0.8rem; color:#a1a1aa;'>Vide.</p>" : 
+    vids.map((v, i) => `<div class="task-item" style="border-color:var(--accent);"><div><strong>Vidéo ${i+1}</strong> : ${v.topic}</div><div style="color:#10b981;">Terminé ✅</div></div>`).join('');
+}
+function saveProjectToFolder() {
+  const platform = document.getElementById('genreSelect').value;
+  const topic = document.getElementById('topicInput').value;
+  if(!topic) return;
+  let projects = JSON.parse(localStorage.getItem('vm_projects') || '{}');
+  if(!projects[platform]) projects[platform] = [];
+  projects[platform].push({ topic, date: new Date().toLocaleString() });
+  localStorage.setItem('vm_projects', JSON.stringify(projects));
+  alert(`✅ Vidéo publiée et sauvegardée dans : ${platform}`);
+  document.getElementById('publishBtn').style.display = 'none';
+}
+
+// --- STUDIO LOGIC ---
+let currentScript = [], projectAssets = [];
+function showLoading(btn, text) { btn.disabled = true; btn.classList.add('loading'); btn.dataset.originalText = btn.innerHTML; btn.innerHTML = `<span class="spinner"></span> ${text}`; }
+function stopLoading(btn) { btn.disabled = false; btn.classList.remove('loading'); btn.innerHTML = btn.dataset.originalText; }
+
+document.getElementById('generateScriptBtn').addEventListener('click', async () => {
+  const apiKey = document.getElementById('agnesApiKey').value.trim();
+  const topic = document.getElementById('topicInput').value.trim();
+  const platform = document.getElementById('genreSelect').value;
+  const agent = document.getElementById('agentSelect').value;
+  const lang = document.getElementById('langSelect').value;
+  const count = parseInt(document.getElementById('sceneCount').value) || 2;
+
+  if (!apiKey || !topic) { alert("Clé API ou Sujet manquant."); return; }
+  showLoading(document.getElementById('generateScriptBtn'), "Rédaction...");
+
+  const prompt = `Tu es un scénariste. Sujet: ${topic}. Format: ${platform}. Langue: ${lang}.
+Personnage: ${agent} (indiscernable d'un humain).
+Découpe en ${count} scènes. Retourne UNIQUEMENT un tableau JSON : [{"scene_number": 1, "narration_text": "...", "visual_prompt": "English prompt featuring ${agent}..."}]`;
+
+  try {
+    const res = await fetch(`${AGNES_BASE}/chat/completions`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({ model: AGNES_MODEL, messages: [{ role: 'user', content: prompt }], temperature: 0.7 })
+    });
+    const data = await res.json();
+    currentScript = JSON.parse(data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim());
+    
+    document.getElementById('scenesContainer').innerHTML = currentScript.map((s, i) => `
+      <div class="scene-item">
+        <div class="scene-media" id="media-${i}">Image ${s.scene_number}</div>
+        <div class="scene-content">
+          <textarea id="text-${i}">${s.narration_text}</textarea>
+          <textarea id="prompt-${i}">${s.visual_prompt}</textarea>
+          <audio id="audio-${i}" controls style="display:none; width:100%; margin-top:5px;"></audio>
+        </div>
+      </div>
+    `).join('');
+    document.getElementById('workspace').style.display = 'block';
+    document.getElementById('previewArea').style.display = 'block';
+  } catch (e) { alert("Erreur scénario : " + e.message); } finally { stopLoading(document.getElementById('generateScriptBtn')); }
+});
+
+document.getElementById('generateAssetsBtn').addEventListener('click', async () => {
+  const agnesKey = document.getElementById('agnesApiKey').value.trim();
+  const ttsUrl = document.getElementById('ttsUrl').value.trim();
+  const lang = document.getElementById('langSelect').value;
+  
+  if (!agnesKey || !ttsUrl) { alert("Vérifiez vos clés API."); return; }
+  
+  showLoading(document.getElementById('generateAssetsBtn'), "Génération des médias...");
+  projectAssets = [];
+
+  for (let i = 0; i < currentScript.length; i++) {
+    const text = document.getElementById(`text-${i}`).value;
+    const prompt = document.getElementById(`prompt-${i}`).value;
+    
+    // 1. Image
+    let imageUrl = '';
+    try {
+      const imgRes = await fetch(`${AGNES_BASE}/images/generations`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${agnesKey}` },
+        body: JSON.stringify({ model: AGNES_IMG_MODEL, prompt: prompt, size: '1K', ratio: '9:16', extra_body: { response_format: 'url' } })
+      });
+      if(!imgRes.ok) throw new Error("Erreur API Image");
+      const imgData = await imgRes.json();
+      imageUrl = imgData.data[0].url;
+      document.getElementById(`media-${i}`).innerHTML = `<img src="${imageUrl}" crossorigin="anonymous">`;
+    } catch(e) { alert(`Image ${i+1} échouée.`); continue; }
+
+    // 2. Audio
+    let audioUrl = '';
+    try {
+      const ttsRes = await fetch(ttsUrl, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input: text, voice: getVoiceName(lang), speed: 1.0 })
+      });
+      if(!ttsRes.ok) throw new Error("Erreur TTS");
+      audioUrl = URL.createObjectURL(await ttsRes.blob());
+      document.getElementById(`audio-${i}`).src = audioUrl;
+      document.getElementById(`audio-${i}`).style.display = 'block';
+    } catch(e) { alert(`Audio ${i+1} échoué.`); continue; }
+
+    projectAssets.push({ text, imageUrl, audioUrl });
+  }
+  
+  stopLoading(document.getElementById('generateAssetsBtn'));
+  alert("Médias générés ! Vous pouvez exporter.");
+});
+
+// --- EXPORT CANVAS COMPLET ---
+const canvas = document.getElementById('videoCanvas');
+const ctx = canvas.getContext('2d');
+
+document.getElementById('renderBtn').addEventListener('click', async () => {
+  if (projectAssets.length === 0) { alert("Générez les médias d'abord."); return; }
+  showLoading(document.getElementById('renderBtn'), "Rendu vidéo...");
+  
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const dest = audioCtx.createMediaStreamDestination();
+  const videoStream = canvas.captureStream(30);
+  const combinedStream = new MediaStream([...videoStream.getVideoTracks(), ...dest.stream.getAudioTracks()]);
+
+  let mediaRecorder, chunks = [];
+  try { mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm;codecs=vp9,opus' }); } 
+  catch (e) { mediaRecorder = new MediaRecorder(combinedStream); }
+
+  mediaRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+  mediaRecorder.onstop = () => {
+    const blob = new Blob(chunks, { type: 'video/webm' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'videomaker.webm'; a.click();
+    stopLoading(document.getElementById('renderBtn')); 
+    document.getElementById('publishBtn').style.display = 'flex';
+  };
+  mediaRecorder.start();
+
+  for (let i = 0; i < projectAssets.length; i++) {
+    const asset = projectAssets[i];
+    let mediaEl = new Image(); 
+    mediaEl.crossOrigin = "anonymous"; 
+    mediaEl.src = asset.imageUrl;
+    
+    await new Promise(r => { mediaEl.onload = r; setTimeout(r, 3000); });
+
+    const audio = new Audio(asset.audioUrl);
+    const audioSource = audioCtx.createMediaElementSource(audio);
+    audioSource.connect(dest);
+    audio.play().catch(()=>{});
+
+    const duration = audio.duration * 1000;
+    const startTime = performance.now();
+
+    await new Promise(resolve => {
+      function drawFrame(time) {
+        const elapsed = time - startTime;
+        if (elapsed >= duration || audio.ended) { resolve(); return; }
+        
+        const progress = elapsed / duration;
+        const scale = 1 + (progress * 0.1);
+        ctx.save(); ctx.translate(canvas.width/2, canvas.height/2); ctx.scale(scale, scale);
+        ctx.drawImage(mediaEl, -canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
+        ctx.restore();
+
+        const gradient = ctx.createLinearGradient(0, canvas.height - 400, 0, canvas.height);
+        gradient.addColorStop(0, 'rgba(0,0,0,0)'); gradient.addColorStop(1, 'rgba(0,0,0,0.8)');
+        ctx.fillStyle = gradient; ctx.fillRect(0, canvas.height - 400, canvas.width, 400);
+
+        ctx.fillStyle = 'white'; ctx.font = 'bold 50px Inter, sans-serif'; ctx.textAlign = 'center';
+        const words = asset.text.split(' ');
+        let line = ''; let y = canvas.height - 150;
+        for (let n = 0; n < words.length; n++) {
+          const testLine = line + words[n] + ' ';
+          if (ctx.measureText(testLine).width > 900 && n > 0) {
+            ctx.fillText(line, canvas.width/2, y); line = words[n] + ' '; y += 60;
+          } else { line = testLine; }
+        }
+        ctx.fillText(line, canvas.width/2, y);
+        requestAnimationFrame(drawFrame);
+      }
+      requestAnimationFrame(drawFrame);
+    });
+  }
+  mediaRecorder.stop();
+});
+
+// --- INITIALISATION ---
+window.onload = () => {
+  renderTasks();
+  renderFolders();
+  const toggleSettings = document.getElementById('toggleSettings');
+  const settingsContent = document.getElementById('settingsContent');
+  toggleSettings.addEventListener('click', () => {
+    settingsContent.style.display = settingsContent.style.display === 'block' ? 'none' : 'block';
+    document.getElementById('settingsArrow').classList.toggle('open');
+  });
+};
+</script>
+</body>
+</html>
