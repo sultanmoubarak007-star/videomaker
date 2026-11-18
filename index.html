@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>NovaStudio - Ultimate V12</title>
+<title>NovaStudio - Ultimate V13</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root { --bg: #0a0a0f; --panel: #14141e; --line: rgba(255, 255, 255, 0.1); --text: #ffffff; --text-dim: #a1a1aa; --accent: #8b5cf6; --grad-1: #ec4899; --grad-2: #8b5cf6; }
@@ -42,11 +42,11 @@ header { display: flex; justify-content: space-between; align-items: center; pad
 .card-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 1rem; color: var(--text); }
 
 /* FORMAT GRID */
-.format-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.8rem; margin-bottom: 1.5rem; }
+.format-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 0.8rem; margin-bottom: 1.5rem; }
 .format-card { background: #1a1a24; border: 1px solid var(--line); border-radius: 14px; padding: 1rem 0.5rem; cursor: pointer; transition: 0.2s; text-align: left; position: relative; }
 .format-card.active { border-color: var(--accent); background: rgba(139, 92, 246, 0.1); }
 .format-icon { font-size: 1.2rem; margin-bottom: 0.5rem; width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-.format-title { font-weight: 600; font-size: 0.8rem; }
+.format-title { font-weight: 600; font-size: 0.75rem; }
 .format-ratio { position: absolute; top: 10px; right: 10px; font-size: 0.55rem; background: rgba(0,0,0,0.5); padding: 2px 5px; border-radius: 4px; }
 
 label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-dim); }
@@ -85,7 +85,8 @@ button:disabled { opacity: 0.5; }
 
 /* CANVAS & VIDEO */
 #previewArea { display: none; }
-#videoPlayer { width: 100%; max-width: 300px; border-radius: 12px; margin: 0 auto 1rem; display: block; background: #000; }
+#videoPlayer { width: 100%; max-width: 300px; border-radius: 12px; margin: 0 auto 1rem; display: none; background: #000; }
+#loadingText { text-align: center; color: var(--accent); font-weight: bold; margin: 1rem 0; display: none; }
 
 .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; display: none; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -132,7 +133,7 @@ button:disabled { opacity: 0.5; }
     <div id="settingsContent">
       <label>Clé Agnes (sk-...)</label>
       <input type="password" id="agnesApiKey" placeholder="sk-...">
-      <p style="font-size:0.7rem; color:#10b981; margin-top:5px;">✅ Voix et Musique intégrées.</p>
+      <p style="font-size:0.7rem; color:#10b981; margin-top:5px;">✅ Voix et Musique intégrées par défaut.</p>
     </div>
   </div>
 
@@ -141,35 +142,62 @@ button:disabled { opacity: 0.5; }
     <div class="format-grid" id="formatGrid">
       <div class="format-card active" data-value="TikTok">
         <div class="format-icon" style="background: rgba(236, 72, 153, 0.2); color: #ec4899;">🎵</div>
-        <div class="format-title">TikTok</div>
-        <div class="format-ratio">9:16</div>
-      </div>
-      <div class="format-card" data-value="YouTube">
-        <div class="format-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">▶️</div>
-        <div class="format-title">YouTube</div>
-        <div class="format-ratio">16:9</div>
+        <div class="format-title">TikTok</div><div class="format-ratio">9:16</div>
       </div>
       <div class="format-card" data-value="Facebook">
         <div class="format-icon" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;">📘</div>
-        <div class="format-title">Facebook</div>
-        <div class="format-ratio">1:1</div>
+        <div class="format-title">Facebook</div><div class="format-ratio">1:1</div>
+      </div>
+      <div class="format-card" data-value="YouTube">
+        <div class="format-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">▶️</div>
+        <div class="format-title">YouTube</div><div class="format-ratio">16:9</div>
+      </div>
+      <div class="format-card" data-value="Instagram">
+        <div class="format-icon" style="background: rgba(217, 70, 239, 0.2); color: #d946ef;">📸</div>
+        <div class="format-title">Instagram</div><div class="format-ratio">1:1</div>
+      </div>
+      <div class="format-card" data-value="Film">
+        <div class="format-icon" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6;">🎬</div>
+        <div class="format-title">Film</div><div class="format-ratio">16:9</div>
+      </div>
+      <div class="format-card" data-value="Documentaire">
+        <div class="format-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">🎥</div>
+        <div class="format-title">Documentaire</div><div class="format-ratio">16:9</div>
+      </div>
+      <div class="format-card" data-value="Série TV">
+        <div class="format-icon" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">📺</div>
+        <div class="format-title">Série TV</div><div class="format-ratio">16:9</div>
       </div>
       <div class="format-card" data-value="Dessin Animé">
-        <div class="format-icon" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">🎨</div>
-        <div class="format-title">Dessin animé</div>
-        <div class="format-ratio">16:9</div>
+        <div class="format-icon" style="background: rgba(20, 184, 166, 0.2); color: #14b8a6;">🎨</div>
+        <div class="format-title">Dessin Animé</div><div class="format-ratio">16:9</div>
+      </div>
+      <div class="format-card" data-value="Publicité">
+        <div class="format-icon" style="background: rgba(244, 63, 94, 0.2); color: #f43f5e;">📢</div>
+        <div class="format-title">Publicité</div><div class="format-ratio">16:9</div>
+      </div>
+      <div class="format-card" data-value="Histoire">
+        <div class="format-icon" style="background: rgba(217, 119, 6, 0.2); color: #d97706;">📜</div>
+        <div class="format-title">Histoire</div><div class="format-ratio">16:9</div>
       </div>
     </div>
 
     <div class="card-title">2. Détails</div>
-    <label>🤖 Agent IA</label>
+    <label>🤖 Agent IA (Humain virtuel)</label>
     <select id="agentSelect">
       <option value="Photorealistic African woman">Africain (Femme)</option>
       <option value="Photorealistic African man">Africain (Homme)</option>
       <option value="Photorealistic Mixed-race woman">Métis (Femme)</option>
       <option value="Photorealistic European woman">Européen (Femme)</option>
+      <option value="Photorealistic European man">Européen (Homme)</option>
       <option value="Photorealistic Asian woman">Asiatique (Femme)</option>
+      <option value="Photorealistic Asian man">Asiatique (Homme)</option>
+      <option value="Photorealistic Middle Eastern woman">Moyen-Orient (Femme)</option>
+      <option value="Photorealistic Middle Eastern man">Moyen-Orient (Homme)</option>
+      <option value="Photorealistic Latino woman">Américain Latino (Femme)</option>
       <option value="Photorealistic Latino man">Américain Latino (Homme)</option>
+      <option value="Photorealistic South American woman">Sud-Américain (Femme)</option>
+      <option value="Photorealistic South American man">Sud-Américain (Homme)</option>
     </select>
 
     <label>Décris ta vidéo</label>
@@ -188,8 +216,9 @@ button:disabled { opacity: 0.5; }
 
   <div id="previewArea" class="card">
     <div class="card-title">4. Rendu final</div>
-    <video id="videoPlayer" controls playsinline></video>
-    <button id="shareBtn" class="btn-primary" style="background:#3b82f6; display:none;"><span class="spinner"></span> 📤 Partager sur les réseaux</button>
+    <div id="loadingText">⏳ Création de la vidéo en cours... (Patientez)</div>
+    <video id="videoPlayer" controls playsinline crossorigin="anonymous"></video>
+    <button id="shareBtn" class="btn-primary" style="background:#3b82f6; display:none;">📤 Partager sur les réseaux</button>
     <button id="saveBtn" class="btn-publish" style="display:none;">💾 Sauvegarder dans mes projets</button>
   </div>
 </div>
@@ -225,6 +254,7 @@ button:disabled { opacity: 0.5; }
 </div>
 
 <script>
+// GESTION DES ERREURS
 window.onerror = function(msg) {
   const banner = document.getElementById('errorBanner');
   banner.style.display = 'block';
@@ -236,17 +266,19 @@ window.onerror = function(msg) {
 const AGNES_BASE = 'https://apihub.agnes-ai.com/v1';
 const AGNES_MODEL = 'agnes-3.0-flash';
 const AGNES_IMG_MODEL = 'agnes-image-2.5-flash';
-const FOLDERS = ['TikTok', 'Facebook', 'YouTube', 'Dessin Animé'];
+const FOLDERS = ['TikTok', 'Facebook', 'YouTube', 'Instagram', 'Film', 'Documentaire', 'Série TV', 'Dessin Animé', 'Publicité', 'Histoire'];
+
 let selectedGenre = "TikTok";
-let currentScript = [];
 let generatedVideoBlob = null;
 
-// NAVIGATION
+// --- NAVIGATION ---
 document.getElementById('btnOpenMenu').addEventListener('click', () => {
   document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebar').style.right = '0px';
 });
 document.getElementById('sidebar-close').addEventListener('click', () => {
   document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar').style.right = '-100%';
 });
 document.getElementById('menuStudio').addEventListener('click', () => showSection('studio'));
 document.getElementById('menuAgent').addEventListener('click', () => showSection('agent'));
@@ -254,6 +286,7 @@ document.getElementById('menuProjects').addEventListener('click', () => showSect
 
 function showSection(id) {
   document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar').style.right = '-100%';
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.getElementById(id + 'Section').classList.add('active');
   if(id === 'projects') renderFolders();
@@ -273,255 +306,57 @@ document.getElementById('formatGrid').addEventListener('click', (e) => {
   selectedGenre = card.dataset.value;
 });
 
-// INIT
+// --- INITIALISATION ---
 window.addEventListener('DOMContentLoaded', () => {
   const savedKey = localStorage.getItem('agnesApiKey');
   if (savedKey) document.getElementById('agnesApiKey').value = savedKey;
   if(!localStorage.getItem('vm_projects')) localStorage.setItem('vm_projects', JSON.stringify({}));
   if(!localStorage.getItem('vm_tasks')) localStorage.setItem('vm_tasks', JSON.stringify([]));
+  
   renderTasks();
   renderFolders();
 });
-document.getElementById('agnesApiKey').addEventListener('change', (e) => localStorage.setItem('agnesApiKey', e.target.value.trim()));
 
-// VOIX
-function getVoiceUrl(text, lang) {
-  let voice = 'fr-FR-Wavenet-A';
-  return `https://api.streamelements.com/kappa/v2/speech?voice=${voice}&text=${encodeURIComponent(text)}`;
+document.getElementById('agnesApiKey').addEventListener('change', (e) => {
+  localStorage.setItem('agnesApiKey', e.target.value.trim());
+});
+
+// --- VOIX (Google API gratuite) ---
+function getVoiceUrl(text) {
+  return `https://api.streamelements.com/kappa/v2/speech?voice=fr-FR-Wavenet-A&text=${encodeURIComponent(text)}`;
 }
 
-// PIPELINE DE GENERATION
-document.getElementById('generateBtn').addEventListener('click', async () => {
+// --- AGENT PLANIFICATEUR ---
+document.getElementById('sendChatBtn').addEventListener('click', async () => {
+  const text = document.getElementById('chatInput').value.trim();
+  if (!text) return;
   const apiKey = document.getElementById('agnesApiKey').value.trim();
-  const topic = document.getElementById('topicInput').value.trim();
-  const agent = document.getElementById('agentSelect').value;
-  const count = parseInt(document.getElementById('sceneCount').value) || 2;
+  if (!apiKey) { alert("Ajoutez votre clé Agnes."); return; }
+
+  const chatMessages = document.getElementById('chatMessages');
+  chatMessages.innerHTML += `<div class="msg user">${text}</div>`;
+  document.getElementById('chatInput').value = '';
+  chatMessages.scrollTop = chatMessages.scrollHeight;
   
-  if (!apiKey || !topic) { alert("Clé API ou Sujet manquant."); return; }
-  
-  const btn = document.getElementById('generateBtn');
-  btn.disabled = true;
-  btn.innerHTML = `<span class="spinner" style="display:inline-block"></span> Création du scénario...`;
-  
-  document.getElementById('workspace').style.display = 'block';
-  document.getElementById('previewArea').style.display = 'block';
-  document.getElementById('scenesContainer').innerHTML = '';
-  document.getElementById('videoPlayer').style.display = 'none';
-  document.getElementById('shareBtn').style.display = 'none';
-  document.getElementById('saveBtn').style.display = 'none';
+  const typingId = 'typing_' + Date.now();
+  chatMessages.innerHTML += `<div class="msg agent" id="${typingId}">🤖 Analyse...</div>`;
 
   try {
-    // 1. SCENARIO (IA très puissante)
-    const prompt = `Tu es un réalisateur hollywoodien expert en vidéos virales. 
-Sujet: "${topic}". Personnage: ${agent}. Format: ${selectedGenre}.
-Tu dois créer exactement ${count} scènes très descriptives pour que l'image soit parfaite (ex: si le sujet est "un chat qui danse", décris le chat en train de danser).
-Retourne UNIQUEMENT un tableau JSON : [{"scene_number": 1, "narration_text": "Texte dit par la voix off", "visual_prompt": "English prompt for the image..."}]`;
+    const now = new Date();
+    const prompt = `Tu es un agent IA. Nous sommes le ${now.toLocaleString()}.
+Extrais le type (TikTok, Facebook, YouTube, Film, Documentaire...), le sujet et l'heure (timestamp ms).
+JSON attendu : { "platform": "...", "topic": "...", "timestamp": 1234567890, "message": "Confirmation" }
+Ordre : "${text}"`;
 
     const res = await fetch(`${AGNES_BASE}/chat/completions`, {
       method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-      body: JSON.stringify({ model: AGNES_MODEL, messages: [{ role: 'user', content: prompt }], temperature: 0.7 })
+      body: JSON.stringify({ model: AGNES_MODEL, messages: [{ role: 'user', content: prompt }], temperature: 0.2 })
     });
     const data = await res.json();
-    currentScript = JSON.parse(data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim());
-    
-    // 2. IMAGES & VOIX
-    let projectAssets = [];
-    for (let i = 0; i < currentScript.length; i++) {
-      btn.innerHTML = `<span class="spinner" style="display:inline-block"></span> Génération image ${i+1}/${currentScript.length}...`;
-      
-      document.getElementById('scenesContainer').innerHTML += `
-        <div class="scene-item">
-          <div class="scene-media" id="media-${i}">Chargement...</div>
-          <div class="scene-content">
-            <textarea readonly>${currentScript[i].narration_text}</textarea>
-          </div>
-        </div>
-      `;
+    let content = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
+    const task = JSON.parse(content);
 
-      // Image
-      let imageUrl = '';
-      try {
-        const imgRes = await fetch(`${AGNES_BASE}/images/generations`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-          body: JSON.stringify({ model: AGNES_IMG_MODEL, prompt: currentScript[i].visual_prompt, size: '1K', ratio: '9:16', extra_body: { response_format: 'url' } })
-        });
-        const imgData = await imgRes.json();
-        imageUrl = imgData.data[0].url;
-        document.getElementById(`media-${i}`).innerHTML = `<img src="${imageUrl}">`;
-      } catch(e) {
-        // Image de secours
-        imageUrl = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDgwIiBoZWlnaHQ9IjE5MjAiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzhiNWNmNjtzdG9wLW9wYWNpdHk6MSIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNlYzQ4OTk7c3RvcC1vcGFjaXR5OjEiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwODAiIGhlaWdodD0iMTkyMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjU0MCIgeT0iOTYwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSI2MCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlIElBPC90ZXh0Pjwvc3ZnPg==';
-        document.getElementById(`media-${i}`).innerHTML = `<img src="${imageUrl}">`;
-      }
-      
-      // Audio
-      let audioUrl = getVoiceUrl(currentScript[i].narration_text, 'Français');
-      projectAssets.push({ text: currentScript[i].narration_text, imageUrl, audioUrl });
-    }
-
-    // 3. VIDEO & MUSIQUE
-    btn.innerHTML = `<span class="spinner" style="display:inline-block"></span> Assemblage de la vidéo...`;
-    await renderVideo(projectAssets);
-    
-  } catch (e) {
-    alert("Erreur : " + e.message);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = `Générer la vidéo complète`;
-  }
-});
-
-async function renderVideo(projectAssets) {
-  const canvas = document.createElement('canvas'); // Canvas caché
-  canvas.width = 1080; canvas.height = 1920;
-  const ctx = canvas.getContext('2d');
-  
-  let mediaRecorder, chunks = [];
-  const videoStream = canvas.captureStream(30);
-  
-  // Musique d'ambiance (Web Audio API)
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const dest = audioCtx.createMediaStreamDestination();
-  const osc = audioCtx.createOscillator();
-  const gainNode = audioCtx.createGain();
-  osc.type = 'sine'; osc.frequency.setValueAtTime(220, audioCtx.currentTime);
-  gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); // Volume bas
-  osc.connect(gainNode); gainNode.connect(dest); osc.start();
-
-  // Mélange Video + Audio (Voix + Musique)
-  const combinedStream = new MediaStream([...videoStream.getVideoTracks(), ...dest.stream.getAudioTracks()]);
-  
-  try { mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm;codecs=vp9,opus' }); } 
-  catch (e) { mediaRecorder = new MediaRecorder(combinedStream); }
-
-  mediaRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
-  
-  return new Promise((resolve) => {
-    mediaRecorder.onstop = () => {
-      osc.stop();
-      generatedVideoBlob = new Blob(chunks, { type: 'video/webm' });
-      const url = URL.createObjectURL(generatedVideoBlob);
-      
-      // Afficher dans le lecteur vidéo
-      const videoPlayer = document.getElementById('videoPlayer');
-      videoPlayer.src = url;
-      videoPlayer.style.display = 'block';
-      videoPlayer.play().catch(()=>{});
-      
-      document.getElementById('shareBtn').style.display = 'flex';
-      document.getElementById('saveBtn').style.display = 'flex';
-      resolve();
-    };
-    
-    mediaRecorder.start();
-
-    (async () => {
-      for (let i = 0; i < projectAssets.length; i++) {
-        const asset = projectAssets[i];
-        
-        let mediaEl = new Image(); 
-        mediaEl.src = asset.imageUrl;
-        await new Promise(r => { mediaEl.onload = r; mediaEl.onerror = r; setTimeout(r, 3000); });
-
-        let duration = 3000; 
-        let audio = new Audio(asset.audioUrl);
-        const audioSource = audioCtx.createMediaElementSource(audio);
-        audioSource.connect(dest); // Route la voix vers l'enregistreur
-        
-        await new Promise(r => {
-          audio.onloadedmetadata = () => { duration = audio.duration * 1000; r(); };
-          audio.onerror = r;
-          setTimeout(r, 3000); 
-        });
-
-        audio.play().catch(()=>{});
-
-        const startTime = performance.now();
-        await new Promise(res => {
-          function drawFrame(time) {
-            const elapsed = time - startTime;
-            if (elapsed >= duration) { res(); return; }
-            
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            const progress = elapsed / duration;
-            const scale = 1 + (progress * 0.05); // Effet de zoom (Ken Burns)
-            if(mediaEl.complete && mediaEl.width) {
-              ctx.save(); ctx.translate(canvas.width/2, canvas.height/2); ctx.scale(scale, scale);
-              ctx.drawImage(mediaEl, -canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
-              ctx.restore();
-            }
-
-            const gradient = ctx.createLinearGradient(0, canvas.height - 400, 0, canvas.height);
-            gradient.addColorStop(0, 'rgba(0,0,0,0)'); gradient.addColorStop(1, 'rgba(0,0,0,0.8)');
-            ctx.fillStyle = gradient; ctx.fillRect(0, canvas.height - 400, canvas.width, 400);
-
-            ctx.fillStyle = 'white'; ctx.font = 'bold 45px Inter, sans-serif'; ctx.textAlign = 'center';
-            const words = asset.text.split(' ');
-            let line = ''; let y = canvas.height - 150;
-            for (let n = 0; n < words.length; n++) {
-              const testLine = line + words[n] + ' ';
-              if (ctx.measureText(testLine).width > 900 && n > 0) {
-                ctx.fillText(line, canvas.width/2, y); line = words[n] + ' '; y += 55;
-              } else { line = testLine; }
-            }
-            ctx.fillText(line, canvas.width/2, y);
-            requestAnimationFrame(drawFrame);
-          }
-          requestAnimationFrame(drawFrame);
-        });
-      }
-      mediaRecorder.stop();
-    })();
-  });
-}
-
-// PARTAGE NATIF
-document.getElementById('shareBtn').addEventListener('click', async () => {
-  if (!generatedVideoBlob) return;
-  try {
-    const file = new File([generatedVideoBlob], 'nova_video.webm', { type: 'video/webm' });
-    await navigator.share({
-      title: 'Ma vidéo NovaStudio',
-      text: 'Regarde ma vidéo générée par IA !',
-      files: [file]
-    });
-  } catch (error) {
-    alert("Le partage direct n'est pas supporté sur ce navigateur. La vidéo va être téléchargée à la place.");
-    const a = document.createElement('a'); a.href = URL.createObjectURL(generatedVideoBlob); a.download = 'nova_video.webm'; a.click();
-  }
-});
-
-// SAUVEGARDE PROJET
-document.getElementById('saveBtn').addEventListener('click', () => {
-  const topic = document.getElementById('topicInput').value || "Vidéo sans titre";
-  let projects = JSON.parse(localStorage.getItem('vm_projects') || '{}');
-  if(!projects[selectedGenre]) projects[selectedGenre] = [];
-  projects[selectedGenre].push({ topic, date: new Date().toLocaleString() });
-  localStorage.setItem('vm_projects', JSON.stringify(projects));
-  alert(`✅ Vidéo sauvegardée dans : ${selectedGenre}`);
-});
-
-// AFFICHAGE PROJETS
-function renderFolders() {
-  const grid = document.getElementById('foldersGrid');
-  const projects = JSON.parse(localStorage.getItem('vm_projects') || '{}');
-  grid.innerHTML = FOLDERS.map(f => {
-    const count = (projects[f] || []).length;
-    const icon = f === 'TikTok' ? '🎵' : f === 'YouTube' ? '▶️' : f === 'Facebook' ? '📘' : '📁';
-    return `<div class="folder" onclick="openFolder('${f}')"><div class="folder-icon">${icon}</div><div class="folder-title">${f}</div><div class="folder-count">${count} vidéo(s)</div></div>`;
-  }).join('');
-}
-
-function openFolder(folderName) {
-  document.getElementById('folderContent').style.display = 'block';
-  document.getElementById('folderTitle').textContent = `Dossier : ${folderName}`;
-  const projects = JSON.parse(localStorage.getItem('vm_projects') || '{}');
-  const vids = projects[folderName] || [];
-  document.getElementById('folderVideos').innerHTML = vids.length === 0 ? "<p style='font-size:0.8rem; color:#a1a1aa;'>Vide.</p>" : 
-    vids.map((v, i) => `<div style="background:#1a1a24; padding:0.8rem; border-radius:8px; margin-bottom:0.5rem; font-size:0.8rem; display:flex; justify-content:space-between;"><div><strong>Vidéo ${i+1}</strong> : ${v.topic}</div><div style="color:#10b981;">Terminé ✅</div></div>`).join('');
-}
-</script>
-</body>
-</html>
+    let tasks = JSON.parse(localStorage.getItem('vm_tasks'));
+    task.id = Date.now(); task.status = 'En attente';
+    tasks.push(task);
+    localStorage.setItem('vm_tasks', JSON.strin
