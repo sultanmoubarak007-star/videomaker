@@ -2,332 +2,639 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>NovaStudio - Ultimate</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NovaStudio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-:root { --bg: #0a0a0f; --panel: #14141e; --line: rgba(255, 255, 255, 0.1); --text: #ffffff; --text-dim: #a1a1aa; --accent: #8b5cf6; --grad-1: #ec4899; --grad-2: #8b5cf6; }
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-body { background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
-
-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; max-width: 1000px; margin: 0 auto; position: sticky; top: 0; background: var(--bg); z-index: 90; }
-.logo { display: flex; align-items: center; gap: 0.75rem; }
-.logo-icon { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--grad-1), var(--grad-2)); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
-.logo-text h1 { font-size: 1.1rem; font-weight: 800; line-height: 1; }
-.logo-text p { font-size: 0.65rem; color: var(--text-dim); margin-top: 2px; }
-.menu-btn { background: #222; border: 1px solid var(--line); color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-
-#sidebar { position: fixed; top: 0; right: -100%; width: 80%; max-width: 320px; height: 100vh; background: var(--panel); border-left: 1px solid var(--line); z-index: 1000; transition: right 0.3s ease; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1rem; box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
-#sidebar.open { right: 0; }
-.sidebar-item { background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border: 1px solid var(--line); display: flex; align-items: center; gap: 10px; }
-
-.section { display: none; max-width: 1000px; margin: 0 auto; padding: 1rem; }
-.section.active { display: block; }
-
-.hero { text-align: center; padding: 2rem 1rem; }
-.hero-badge { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 20px; background: rgba(139, 92, 246, 0.2); color: #c4b5fd; font-size: 0.7rem; font-weight: 600; margin-bottom: 1rem; text-transform: uppercase; }
-.hero h2 { font-size: 2.2rem; font-weight: 800; line-height: 1.1; margin-bottom: 1rem; letter-spacing: -0.5px; }
-.hero h2 span { background: linear-gradient(135deg, var(--grad-1), var(--grad-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.hero p { color: var(--text-dim); font-size: 0.9rem; max-width: 500px; margin: 0 auto; line-height: 1.5; }
-
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 1.5rem; margin-bottom: 1.5rem; }
-.card-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 1rem; color: var(--text); }
-
-.format-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 0.8rem; margin-bottom: 1.5rem; }
-.format-card { background: #1a1a24; border: 1px solid var(--line); border-radius: 14px; padding: 1rem 0.5rem; cursor: pointer; transition: 0.2s; text-align: left; position: relative; }
-.format-card.active { border-color: var(--accent); background: rgba(139, 92, 246, 0.1); }
-.format-icon { font-size: 1.2rem; margin-bottom: 0.5rem; width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-.format-title { font-weight: 600; font-size: 0.75rem; }
-.format-ratio { position: absolute; top: 10px; right: 10px; font-size: 0.55rem; background: rgba(0,0,0,0.5); padding: 2px 5px; border-radius: 4px; }
-
-label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-dim); }
-input, select, textarea { width: 100%; padding: 1rem; background: #1a1a24; border: 1px solid var(--line); border-radius: 12px; color: white; font-size: 0.9rem; margin-bottom: 1rem; outline: none; }
-textarea { resize: vertical; min-height: 60px; }
-button { cursor: pointer; padding: 1rem; border-radius: 12px; border: none; font-weight: 600; font-size: 1rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem; width: 100%; color: white; }
-.btn-primary { background: linear-gradient(135deg, var(--grad-1), var(--grad-2)); }
-
-#settingsContent { display: none; margin-top: 1rem; border-top: 1px solid var(--line); padding-top: 1rem; }
-
-.scene-item { background: #1a1a24; border: 1px solid var(--line); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; display: flex; gap: 1rem; }
-.scene-media { width: 70px; height: 124px; background: #000; border-radius: 8px; flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #555; text-align: center; }
-.scene-media img { width: 100%; height: 100%; object-fit: cover; }
-.scene-content { flex: 1; }
-.scene-content textarea { min-height: 50px; font-size: 0.75rem; padding: 0.5rem; }
-
-#previewArea { display: none; }
-#videoPlayer { width: 100%; max-width: 300px; border-radius: 12px; margin: 0 auto 1rem; display: none; background: #000; }
-#loadingText { text-align: center; color: var(--accent); font-weight: bold; margin: 1rem 0; display: none; }
+:root{--bg:#0a0a0f;--panel:#14141e;--line:rgba(255,255,255,.1);--dim:#a1a1aa;--accent:#8b5cf6;--g1:#ec4899;--g2:#8b5cf6}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:#fff;min-height:100vh;overflow-x:hidden}
+header{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem;max-width:1000px;margin:0 auto;position:sticky;top:0;background:var(--bg);z-index:90}
+.logo{display:flex;align-items:center;gap:.75rem}
+.logo-icon{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--g1),var(--g2));display:flex;justify-content:center;align-items:center}
+.logo h1{font-size:1.1rem;font-weight:800;line-height:1}
+.logo p{font-size:.65rem;color:var(--dim);margin-top:2px}
+.menu-btn{background:#222;border:1px solid var(--line);width:40px;height:40px;border-radius:50%;font-size:1.2rem;padding:0}
+#sidebar{position:fixed;top:0;right:-100%;width:80%;max-width:320px;height:100vh;background:var(--panel);border-left:1px solid var(--line);z-index:1000;transition:right .3s;padding:2rem 1.5rem;display:flex;flex-direction:column;gap:1rem}
+#sidebar.open{right:0}
+.sidebar-item{background:rgba(255,255,255,.03);padding:1rem;border-radius:12px;font-weight:600;cursor:pointer;border:1px solid var(--line)}
+.section{display:none;max-width:1000px;margin:0 auto;padding:1rem}
+.section.active{display:block}
+.hero{text-align:center;padding:1.5rem 1rem}
+.hero h2{font-size:2rem;font-weight:800;line-height:1.1;margin-bottom:.8rem}
+.hero h2 span{background:linear-gradient(135deg,var(--g1),var(--g2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--dim);font-size:.9rem}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:1.5rem;margin-bottom:1.5rem}
+.card-title{font-size:.9rem;font-weight:600;margin-bottom:1rem}
+.format-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:.7rem;margin-bottom:1.5rem}
+.format-card{background:#1a1a24;border:1px solid var(--line);border-radius:14px;padding:.9rem .5rem;cursor:pointer;position:relative}
+.format-card.active{border-color:var(--accent);background:rgba(139,92,246,.12)}
+.format-icon{font-size:1.3rem;margin-bottom:.4rem}
+.format-title{font-weight:600;font-size:.75rem}
+.format-ratio{position:absolute;top:8px;right:8px;font-size:.55rem;background:rgba(0,0,0,.5);padding:2px 5px;border-radius:4px}
+label{display:block;font-size:.8rem;font-weight:600;margin-bottom:.5rem;color:var(--dim)}
+input,select,textarea{width:100%;padding:1rem;background:#1a1a24;border:1px solid var(--line);border-radius:12px;color:#fff;font-size:.9rem;margin-bottom:1rem;outline:none}
+input[type=checkbox]{width:auto;margin:0}
+.check{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;color:var(--dim);font-size:.85rem}
+textarea{resize:vertical;min-height:70px}
+button{cursor:pointer;padding:1rem;border-radius:12px;border:none;font-weight:600;font-size:1rem;display:flex;justify-content:center;align-items:center;gap:.5rem;width:100%;color:#fff;margin-top:.6rem}
+button:disabled{opacity:.6}
+.btn-primary{background:linear-gradient(135deg,var(--g1),var(--g2))}
+.btn-blue{background:#3b82f6}.btn-green{background:#10b981}.btn-red{background:#ef4444}
+#settingsContent{display:none;margin-top:1rem;border-top:1px solid var(--line);padding-top:1rem}
+.scene-item{background:#1a1a24;border:1px solid var(--line);border-radius:12px;padding:1rem;margin-bottom:1rem;display:flex;gap:1rem}
+.scene-media{width:90px;height:160px;background:#000;border-radius:8px;flex-shrink:0;overflow:hidden}
+.scene-media video,.scene-media img{width:100%;height:100%;object-fit:cover}
+.scene-content{flex:1;font-size:.8rem;line-height:1.4;min-width:0}
+.scene-content .st{color:var(--accent);font-weight:600;margin-bottom:.4rem}
+.scene-content a{color:#93c5fd;font-size:.75rem}
+#status{font-size:.85rem;color:var(--accent);font-weight:600;margin-bottom:1rem;line-height:1.4}
+#status.err{color:#f87171}
+#previewArea{display:none}
+#videoPlayer{width:100%;max-width:340px;border-radius:12px;margin:0 auto 1rem;display:block;background:#000}
+.proj video{width:100%;max-width:300px;border-radius:10px;display:block;margin:.6rem auto}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">
-    <div class="logo-icon">✨</div>
-    <div class="logo-text">
-      <h1>NovaStudio</h1>
-      <p>Générateur vidéo IA</p>
-    </div>
-  </div>
-  <button class="menu-btn" onclick="document.getElementById('sidebar').style.right = '0px'">⋮</button>
+  <div class="logo"><div class="logo-icon">✨</div><div><h1>NovaStudio</h1><p>Générateur vidéo IA</p></div></div>
+  <button class="menu-btn" style="width:40px;margin:0" onclick="document.getElementById('sidebar').classList.add('open')">⋮</button>
 </header>
 
 <div id="sidebar">
-  <button onclick="document.getElementById('sidebar').style.right = '-100%'" style="background:none; border:none; color:white; font-size:1.5rem; text-align:right; margin-bottom:1rem;">✕</button>
-  <div class="sidebar-item" onclick="showSection('studio')">🎬 Studio Manuel</div>
-  <div class="sidebar-item" onclick="showSection('agent')">🤖 Agent Planificateur</div>
-  <div class="sidebar-item" onclick="showSection('projects')">📁 Mes Projets</div>
+  <button class="btn-red" style="background:none;font-size:1.4rem;justify-content:flex-end" onclick="document.getElementById('sidebar').classList.remove('open')">✕</button>
+  <div class="sidebar-item" onclick="showSection('studio')">🎬 Studio</div>
+  <div class="sidebar-item" onclick="showSection('projects')">📁 Mes projets</div>
 </div>
 
-<!-- SECTION STUDIO -->
 <div id="studioSection" class="section active">
   <div class="hero">
-    <div class="hero-badge">✨ EXCLUSIF</div>
-    <h2>Crée n'importe quelle<br><span>vidéo, au niveau<br>professionnel</span></h2>
-    <p>Décris ta vidéo, choisis ton format, l'IA s'occupe du reste.</p>
+    <h2>Crée n'importe quelle<br><span>vidéo avec l'IA</span></h2>
+    <p>Décris ta vidéo, choisis le format : l'IA génère les scènes animées, la voix et les sous-titres.</p>
   </div>
 
-  <div class="card" style="padding: 1rem;">
-    <div onclick="let s = document.getElementById('settingsContent'); s.style.display = s.style.display === 'block' ? 'none' : 'block'" style="font-weight:600; font-size:0.85rem; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
-      <span>🔑 Clé API Agnes</span> <span>▼</span>
+  <div class="card" style="padding:1rem">
+    <div onclick="let s=document.getElementById('settingsContent');s.style.display=s.style.display==='block'?'none':'block'" style="font-weight:600;font-size:.85rem;cursor:pointer;display:flex;justify-content:space-between">
+      <span>🔑 Clé API Agnes</span><span>▼</span>
     </div>
     <div id="settingsContent">
-      <label>Clé Agnes (sk-...)</label>
-      <input type="password" id="agnesApiKey" placeholder="sk-..." onchange="localStorage.setItem('agnesApiKey', this.value.trim())">
+      <label>Clé Agnes</label>
+      <input type="password" id="agnesApiKey" placeholder="sk-...">
+      <p style="font-size:.7rem;color:var(--dim)">La clé reste sur ton téléphone. Ne partage jamais ce fichier avec la clé dedans.</p>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">1. Choisis ton format</div>
-    <div class="format-grid">
-      <div class="format-card active" onclick="selectFormat(this, 'TikTok')">
-        <div class="format-icon" style="background: rgba(236, 72, 153, 0.2); color: #ec4899;">🎵</div>
-        <div class="format-title">TikTok</div><div class="format-ratio">9:16</div>
-      </div>
-      <div class="format-card" onclick="selectFormat(this, 'Facebook')">
-        <div class="format-icon" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;">📘</div>
-        <div class="format-title">Facebook</div><div class="format-ratio">1:1</div>
-      </div>
-      <div class="format-card" onclick="selectFormat(this, 'YouTube')">
-        <div class="format-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">▶️</div>
-        <div class="format-title">YouTube</div><div class="format-ratio">16:9</div>
-      </div>
-      <div class="format-card" onclick="selectFormat(this, 'Instagram')">
-        <div class="format-icon" style="background: rgba(217, 70, 239, 0.2); color: #d946ef;">📸</div>
-        <div class="format-title">Instagram</div><div class="format-ratio">1:1</div>
-      </div>
-      <div class="format-card" onclick="selectFormat(this, 'Film')">
-        <div class="format-icon" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6;">🎬</div>
-        <div class="format-title">Film</div><div class="format-ratio">16:9</div>
-      </div>
-      <div class="format-card" onclick="selectFormat(this, 'Documentaire')">
-        <div class="format-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">🎥</div>
-        <div class="format-title">Documentaire</div><div class="format-ratio">16:9</div>
-      </div>
-    </div>
+    <div class="card-title">1. Format</div>
+    <div class="format-grid" id="formatGrid"></div>
 
     <div class="card-title">2. Détails</div>
-    <label>🤖 Agent IA</label>
+    <label>Personnage principal</label>
     <select id="agentSelect">
-      <option value="Photorealistic African woman">Africain (Femme)</option>
-      <option value="Photorealistic African man">Africain (Homme)</option>
-      <option value="Photorealistic European woman">Européen (Femme)</option>
-      <option value="Photorealistic Asian woman">Asiatique (Femme)</option>
+      <option value="Photorealistic African woman">Africaine (femme)</option>
+      <option value="Photorealistic African man">Africain (homme)</option>
+      <option value="Photorealistic Mixed-race woman">Métisse (femme)</option>
+      <option value="Photorealistic European woman">Européenne (femme)</option>
+      <option value="Photorealistic European man">Européen (homme)</option>
+      <option value="Photorealistic Asian woman">Asiatique (femme)</option>
+      <option value="Photorealistic Latino man">Latino (homme)</option>
+      <option value="">Aucun personnage (décors, objets)</option>
     </select>
 
-    <label>Langue</label>
+    <label>Langue de la voix</label>
     <select id="langSelect">
-      <option value="Français">Français</option>
-      <option value="Anglais">Anglais</option>
-      <option value="Espagnol">Espagnol</option>
+      <option>Français</option><option>Anglais</option><option>Espagnol</option>
+      <option>Allemand</option><option>Italien</option><option>Portugais</option>
     </select>
 
     <label>Décris ta vidéo</label>
-    <textarea id="topicInput" placeholder="Ex: Un chat qui danse..."></textarea>
-    
-    <label>Scènes</label>
-    <input type="number" id="sceneCount" value="2" min="1" max="4">
-    
-    <button id="generateBtn" class="btn-primary" onclick="generateVideo()">Générer la vidéo complète</button>
+    <textarea id="topicInput" placeholder="Ex : Un peintre qui découvre une porte rouge dans une vieille maison..."></textarea>
+
+    <label>Nombre de scènes (1 à 6, ~5 s chacune)</label>
+    <input type="number" id="sceneCount" value="3" min="1" max="6">
+
+    <label>Mode de génération</label>
+    <select id="modeSelect"><option value="image">Rapide : images animées (environ 1 min)</option><option value="video">Réaliste : vidéo IA (1 à 3 min par scène)</option></select>
+
+    <div class="check"><input type="checkbox" id="musicToggle" checked><span>Musique de fond douce</span></div>
+
+    <button id="generateBtn" class="btn-primary" onclick="generateScript()">1. Écrire le scénario</button>
   </div>
 
-  <div id="workspace" class="card" style="display:none;">
-    <div class="card-title">3. Génération en cours</div>
+  <div id="scenarioCard" class="card" style="display:none">
+    <div class="card-title">3. Scénario (tu peux tout modifier)</div>
+    <div id="scenarioList"></div>
+    <button id="mediaBtn" class="btn-primary" onclick="generateMedia()">2. Générer la vidéo</button>
+  </div>
+
+  <div id="workspace" class="card" style="display:none">
+    <div class="card-title">4. Génération</div>
+    <div id="status"></div>
     <div id="scenesContainer"></div>
   </div>
 
   <div id="previewArea" class="card">
-    <div class="card-title">4. Rendu final</div>
-    <div id="loadingText">⏳ Création de la vidéo en cours... (Patientez)</div>
-    <video id="videoPlayer" controls playsinline crossorigin="anonymous"></video>
-    <button class="btn-primary" style="background:#3b82f6; display:none;" id="shareBtn" onclick="shareVideo()">📤 Partager</button>
+    <div class="card-title">5. Rendu final</div>
+    <video id="videoPlayer" controls playsinline></video>
+    <button class="btn-blue" onclick="shareVideo()">📤 Partager</button>
+    <button class="btn-green" onclick="downloadVideo()">⬇️ Télécharger</button>
+    <button class="btn-primary" onclick="saveProject()">💾 Sauvegarder dans Mes projets</button>
+    <button class="btn-blue" onclick="makeKit()">✍️ Titre + hashtags pour publier</button>
+    <textarea id="kit" style="display:none;min-height:190px;margin-top:1rem"></textarea>
   </div>
 </div>
 
-<!-- SECTION AGENT -->
-<div id="agentSection" class="section">
-  <div class="card">
-    <div class="card-title">🤖 Agent Planificateur</div>
-    <textarea id="chatInput" placeholder="Ex: Dans 2 minutes, fais une vidéo..."></textarea>
-    <button class="btn-primary" onclick="alert('Message reçu ! (La planification automatique nécessite un serveur externe)')">Envoyer</button>
-  </div>
-</div>
-
-<!-- SECTION PROJETS -->
 <div id="projectsSection" class="section">
-  <div class="card">
-    <div class="card-title">📁 Mes Projets</div>
-    <p style="font-size:0.8rem; color:#a1a1aa;">Vos vidéos sauvegardées apparaîtront ici.</p>
-  </div>
+  <div class="card"><div class="card-title">📁 Mes projets</div><div id="projectsList"></div></div>
 </div>
 
 <script>
-let currentFormat = "TikTok";
-let videoBlob = null;
-const AGNES_BASE = 'https://apihub.agnes-ai.com/v1';
+/* ========= RÉGLAGES ========= */
+const AGNES_ROOT = 'https://apihub.agnes-ai.com';
+const AGNES_BASE = AGNES_ROOT + '/v1';
+const MODEL_TEXT  = 'agnes-2.5-flash';   // modèle de texte (scénario)
+const MODEL_VIDEO = 'agnes-video-v2.0';  // modèle de vidéo
+const MODELS_IMAGE = ['agnes-image-2.1-flash', 'agnes-image-2.5-flash', 'agnes-image-2.0-flash'];
+const NUM_FRAMES = 121, FRAME_RATE = 24; // ~5 secondes par scène
 
-function showSection(id) {
-  document.getElementById('sidebar').style.right = '-100%';
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.getElementById(id + 'Section').classList.add('active');
-}
-
-function selectFormat(el, format) {
-  document.querySelectorAll('.format-card').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  currentFormat = format;
-}
-
-window.onload = () => {
-  const k = localStorage.getItem('agnesApiKey');
-  if(k) document.getElementById('agnesApiKey').value = k;
+// v = vertical, s = carré, h = horizontal
+const SIZES = {
+  v: { gw: 768,  gh: 1152, cw: 720,  ch: 1280 },
+  s: { gw: 768,  gh: 768,  cw: 720,  ch: 720  },
+  h: { gw: 1152, gh: 768,  cw: 1280, ch: 720  }
+};
+const FORMATS = {
+  'TikTok':       { icon: '🎵', ratio: '9:16', o: 'v', style: 'dynamic vertical social media video, vivid colors' },
+  'Facebook':     { icon: '📘', ratio: '1:1',  o: 's', style: 'engaging social media video, bright and clear' },
+  'YouTube':      { icon: '▶️', ratio: '16:9', o: 'h', style: 'high quality YouTube video, cinematic' },
+  'Instagram':    { icon: '📸', ratio: '1:1',  o: 's', style: 'aesthetic Instagram video, stylish' },
+  'Film':         { icon: '🎬', ratio: '16:9', o: 'h', style: 'cinematic movie scene, film grain, dramatic lighting' },
+  'Documentaire': { icon: '🎥', ratio: '16:9', o: 'h', style: 'realistic documentary footage, natural light' },
+  'Série TV':     { icon: '📺', ratio: '16:9', o: 'h', style: 'TV drama series scene, expressive emotions, cinematic' },
+  'Dessin animé': { icon: '🎨', ratio: '16:9', o: 'h', style: '3D animated cartoon, colorful, friendly characters' },
+  'Publicité':    { icon: '📢', ratio: '16:9', o: 'h', style: 'premium commercial advertisement, clean product shots, glossy' },
+  'Histoire':     { icon: '📖', ratio: '9:16', o: 'v', style: 'storytelling scene, emotional, cinematic' }
+};
+// [voix homme, voix femme] (voix StreamElements)
+const VOICES = {
+  'Français': ['Mathieu', 'Celine'], 'Anglais': ['Brian', 'Amy'], 'Espagnol': ['Enrique', 'Conchita'],
+  'Allemand': ['Hans', 'Marlene'],   'Italien': ['Giorgio', 'Carla'], 'Portugais': ['Ricardo', 'Vitoria']
 };
 
-function getVoiceUrl(text, lang) {
-  let v = 'fr-FR-Wavenet-A';
-  if(lang === 'Anglais') v = 'en-US-Wavenet-A';
-  if(lang === 'Espagnol') v = 'es-ES-Wavenet-A';
-  return `https://api.streamelements.com/kappa/v2/speech?voice=${v}&text=${encodeURIComponent(text)}`;
+/* ========= ÉTAT ========= */
+let currentFormat = 'TikTok';
+let videoBlob = null, videoExt = 'webm', lastTitle = '';
+let audioCtx = null;
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* ========= INTERFACE ========= */
+function showSection(id) {
+  $('sidebar').classList.remove('open');
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  $(id + 'Section').classList.add('active');
+  if (id === 'projects') renderProjects();
 }
-
-async function generateVideo() {
-  const key = document.getElementById('agnesApiKey').value.trim();
-  const topic = document.getElementById('topicInput').value.trim();
-  const lang = document.getElementById('langSelect').value;
-  if (!key || !topic) { alert("Mettez la clé API et un sujet."); return; }
-  
-  const btn = document.getElementById('generateBtn');
-  btn.disabled = true; btn.innerHTML = "⏳ Création...";
-  document.getElementById('workspace').style.display = 'block';
-  document.getElementById('previewArea').style.display = 'block';
-  document.getElementById('loadingText').style.display = 'block';
-
-  try {
-    // 1. Script
-    const res = await fetch(`${AGNES_BASE}/chat/completions`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-      body: JSON.stringify({ model: 'agnes-3.0-flash', messages: [{ role: 'user', content: `Sujet: "${topic}". Fais 2 scènes. JSON: [{"scene_number":1,"narration_text":"...","visual_prompt":"..."}]` }], temperature: 0.7 })
-    });
-    const data = await res.json();
-    const script = JSON.parse(data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim());
-    
-    let assets = [];
-    for (let i = 0; i < script.length; i++) {
-      btn.innerHTML = `⏳ Image ${i+1}/${script.length}...`;
-      document.getElementById('scenesContainer').innerHTML += `
-        <div class="scene-item">
-          <div class="scene-media" id="media-${i}">...</div>
-          <div class="scene-content"><textarea readonly>${script[i].narration_text}</textarea></div>
-        </div>`;
-
-      let imgUrl = '';
-      try {
-        const imgRes = await fetch(`${AGNES_BASE}/images/generations`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-          body: JSON.stringify({ model: 'agnes-image-2.5-flash', prompt: script[i].visual_prompt, size: '1K', ratio: '9:16', extra_body: { response_format: 'url' } })
-        });
-        const imgData = await imgRes.json();
-        imgUrl = imgData.data[0].url;
-        document.getElementById(`media-${i}`).innerHTML = `<img src="${imgUrl}">`;
-      } catch(e) {}
-      assets.push({ text: script[i].narration_text, img: imgUrl, audio: getVoiceUrl(script[i].narration_text, lang) });
-    }
-
-    btn.innerHTML = "⏳ Vidéo...";
-    await renderVideo(assets);
-  } catch(e) { alert("Erreur: " + e.message); }
-  finally { btn.disabled = false; btn.innerHTML = "Générer la vidéo complète"; }
-}
-
-async function renderVideo(assets) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 1080; canvas.height = 1920;
-  const ctx = canvas.getContext('2d');
-  let recorder, chunks = [];
-  
-  const stream = canvas.captureStream(30);
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  await audioCtx.resume();
-  const dest = audioCtx.createMediaStreamDestination();
-  
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.frequency.value = 220; gain.gain.value = 0.05;
-  osc.connect(gain); gain.connect(dest); osc.start();
-
-  const combined = new MediaStream([...stream.getVideoTracks(), ...dest.stream.getAudioTracks()]);
-  recorder = new MediaRecorder(combined);
-  recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
-  
-  return new Promise(resolve => {
-    recorder.onstop = () => {
-      osc.stop();
-      videoBlob = new Blob(chunks, {type: 'video/webm'});
-      const url = URL.createObjectURL(videoBlob);
-      document.getElementById('videoPlayer').src = url;
-      document.getElementById('videoPlayer').style.display = 'block';
-      document.getElementById('videoPlayer').play().catch(()=>{});
-      document.getElementById('loadingText').style.display = 'none';
-      document.getElementById('shareBtn').style.display = 'flex';
-      resolve();
+function buildFormats() {
+  const grid = $('formatGrid');
+  for (const name in FORMATS) {
+    const f = FORMATS[name];
+    const d = document.createElement('div');
+    d.className = 'format-card' + (name === currentFormat ? ' active' : '');
+    d.innerHTML = '<div class="format-icon">' + f.icon + '</div><div class="format-title"></div><div class="format-ratio">' + f.ratio + '</div>';
+    d.querySelector('.format-title').textContent = name;
+    d.onclick = () => {
+      document.querySelectorAll('.format-card').forEach(c => c.classList.remove('active'));
+      d.classList.add('active'); currentFormat = name; saveDraft();
     };
-    recorder.start();
+    grid.appendChild(d);
+  }
+}
+window.addEventListener('load', () => {
+  buildFormats();
+  loadDraft();
+  ['topicInput','langSelect','agentSelect','sceneCount','modeSelect'].forEach(id => $(id).addEventListener('input', saveDraft));
+  try { const k = localStorage.getItem('agnesApiKey'); if (k) $('agnesApiKey').value = k; } catch (e) {}
+});
+function setStatus(msg, isErr) { const s = $('status'); s.textContent = msg; s.className = isErr ? 'err' : ''; }
 
-    (async () => {
-      for (let a of assets) {
-        let img = new Image(); img.src = a.img;
-        await new Promise(r => { img.onload = r; img.onerror = r; setTimeout(r, 3000); });
-        let audio = new Audio(a.audio); audio.crossOrigin = "anonymous";
-        const src = audioCtx.createMediaElementSource(audio);
-        src.connect(dest);
-        await new Promise(r => { audio.onloadedmetadata = r; audio.onerror = r; setTimeout(r, 2000); });
-        audio.play().catch(()=>{});
-        
-        const dur = audio.duration ? audio.duration * 1000 : 3000;
-        const start = performance.now();
-        await new Promise(res => {
-          function draw(t) {
-            if (t - start >= dur) { res(); return; }
-            ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 1080, 1920);
-            if (img.complete && img.width) ctx.drawImage(img, 0, 0, 1080, 1920);
-            ctx.fillStyle = 'white'; ctx.font = 'bold 45px sans-serif'; ctx.textAlign = 'center';
-            ctx.fillText(a.text, 540, 1700);
-            requestAnimationFrame(draw);
-          }
-          requestAnimationFrame(draw);
-        });
-      }
-      recorder.stop();
-    })();
+/* ========= API AGNES ========= */
+async function agnesFetch(url, opts, tries = 4) {
+  let lastErr;
+  for (let i = 0; i < tries; i++) {
+    let r;
+    try { r = await fetch(url, opts); } catch (e) { lastErr = new Error('Réseau : ' + e.message); await sleep(5000); continue; }
+    if (r.ok) return r;
+    const body = await r.text().catch(() => '');
+    lastErr = new Error('Agnes ' + r.status + ' : ' + body.slice(0, 200));
+    if ([408, 429, 500, 502, 503, 504, 520, 522, 524].includes(r.status)) { await sleep(10000 * (i + 1)); continue; }
+    throw lastErr;
+  }
+  throw lastErr;
+}
+const authHeaders = key => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key });
+
+async function makeScript(key, topic, lang, count, fmtName, fmt, agent) {
+  const who = agent
+    ? 'Main character (copy this exact description at the start of EVERY visual_prompt so the character stays the same): ' + agent + '.'
+    : 'No recurring character: focus on environments and objects.';
+  const prompt =
+    'You write short video scripts.\nTopic: "' + topic + '"\nVideo type: ' + fmtName + ' (' + fmt.style + ')\n' +
+    'Narration language: ' + lang + '\nCreate exactly ' + count + ' scenes, each a clip of about 5 seconds.\n' +
+    '- narration_text: written in ' + lang + ', 10 to 18 words, no emojis.\n' +
+    '- visual_prompt: in English, one detailed cinematic shot with realistic motion, lighting and camera movement. ' + who +
+    ' Never include text, captions or logos in the image.\n' +
+    'Return ONLY a JSON array: [{"scene_number":1,"narration_text":"...","visual_prompt":"..."}]';
+  const r = await agnesFetch(AGNES_BASE + '/chat/completions', {
+    method: 'POST', headers: authHeaders(key),
+    body: JSON.stringify({ model: MODEL_TEXT, messages: [{ role: 'user', content: prompt }], temperature: 0.7 })
   });
+  const d = await r.json();
+  const txt = d.choices[0].message.content;
+  const a = txt.indexOf('['), b = txt.lastIndexOf(']');
+  if (a < 0 || b < 0) throw new Error('Scénario illisible, réessaie.');
+  const arr = JSON.parse(txt.slice(a, b + 1));
+  if (!Array.isArray(arr) || !arr.length) throw new Error('Scénario vide, réessaie.');
+  return arr.slice(0, count);
 }
 
+function findVideoUrl(o) {
+  let found = null;
+  (function walk(v, k) {
+    if (found || v == null) return;
+    if (typeof v === 'string') {
+      if (/^https?:\/\//i.test(v) && (/\.(mp4|webm|mov)(\?|#|$)/i.test(v) || /video/i.test(k || ''))) found = v;
+    } else if (typeof v === 'object') { for (const kk in v) walk(v[kk], kk); }
+  })(o, '');
+  return found;
+}
+function findStatus(o) {
+  let s = '';
+  (function walk(v) {
+    if (s || !v || typeof v !== 'object') return;
+    for (const k in v) {
+      if (/^(status|state)$/i.test(k) && typeof v[k] === 'string') { s = v[k]; return; }
+      walk(v[k]);
+    }
+  })(o);
+  return s;
+}
+
+async function makeClip(key, prompt, size, onProgress) {
+  const r = await agnesFetch(AGNES_BASE + '/videos', {
+    method: 'POST', headers: authHeaders(key),
+    body: JSON.stringify({ model: MODEL_VIDEO, prompt, width: size.gw, height: size.gh, num_frames: NUM_FRAMES, frame_rate: FRAME_RATE })
+  });
+  const d = await r.json();
+  const id = d.video_id || d.id || (d.data && (d.data.video_id || d.data.id)) || d.task_id;
+  if (!id) throw new Error('Pas de video_id : ' + JSON.stringify(d).slice(0, 200));
+  for (let t = 0; t < 90; t++) {            // ~6 minutes maximum
+    await sleep(4000);
+    onProgress && onProgress(t * 4);
+    const pr = await agnesFetch(AGNES_ROOT + '/agnesapi?video_id=' + encodeURIComponent(id), { headers: { 'Authorization': 'Bearer ' + key } });
+    const pd = await pr.json();
+    const st = findStatus(pd), url = findVideoUrl(pd);
+    if (/fail|error|cancel/i.test(st)) throw new Error('Échec Agnes : ' + JSON.stringify(pd).slice(0, 200));
+    if (url) return url;
+  }
+  throw new Error('Délai dépassé pour cette scène.');
+}
+
+/* ========= VOIX ========= */
+async function fetchVoice(text, lang, female) {
+  try {
+    const v = VOICES[lang][female ? 1 : 0];
+    const r = await fetch('https://api.streamelements.com/kappa/v2/speech?voice=' + v + '&text=' + encodeURIComponent(text));
+    if (!r.ok) return null;
+    return await audioCtx.decodeAudioData(await r.arrayBuffer());
+  } catch (e) { return null; }
+}
+async function fetchBlob(url) {
+  try { const r = await fetch(url); if (!r.ok) return null; return await r.blob(); } catch (e) { return null; }
+}
+
+/* ========= GÉNÉRATION ========= */
+function addCard(text, fmt) {
+  const d = document.createElement('div');
+  d.className = 'scene-item';
+  d.innerHTML = '<div class="scene-media"></div><div class="scene-content"><div class="st"></div><p class="tx"></p></div>';
+  d.querySelector('.tx').textContent = text;
+  const m = d.querySelector('.scene-media');
+  if (fmt.o === 's') { m.style.width = '110px'; m.style.height = '110px'; }
+  if (fmt.o === 'h') { m.style.width = '150px'; m.style.height = '100px'; }
+  $('scenesContainer').appendChild(d);
+  return d;
+}
+const cardStatus = (c, t) => { c.querySelector('.st').textContent = t; };
+function showClip(card, url, mode) {
+  const v = document.createElement(mode === 'image' ? 'img' : 'video');
+  v.src = url;
+  if (mode !== 'image') { v.controls = true; v.muted = true; v.loop = true; v.playsInline = true; }
+  const m = card.querySelector('.scene-media'); m.innerHTML = ''; m.appendChild(v);
+  card.querySelectorAll('.scene-content a').forEach(x => x.remove());
+  const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Ouvrir / télécharger cette scène';
+  card.querySelector('.scene-content').appendChild(a);
+}
+
+let scenes = [];
+
+async function generateScript() {
+  const key = $('agnesApiKey').value.trim(), topic = $('topicInput').value.trim();
+  if (!key || !topic) { alert('Ajoute ta clé API et décris ta vidéo.'); return; }
+  try { localStorage.setItem('agnesApiKey', key); } catch (e) {}
+  const count = Math.min(6, Math.max(1, parseInt($('sceneCount').value) || 3));
+  const btn = $('generateBtn');
+  btn.disabled = true; btn.textContent = '⏳ Écriture du scénario...';
+  try {
+    scenes = await makeScript(key, topic, $('langSelect').value, count, currentFormat, FORMATS[currentFormat], $('agentSelect').value);
+    lastTitle = topic.slice(0, 40);
+    renderScenario();
+    $('scenarioCard').style.display = 'block';
+    $('scenarioCard').scrollIntoView({ behavior: 'smooth' });
+  } catch (e) { alert('Erreur : ' + e.message); }
+  finally { btn.disabled = false; btn.textContent = '1. Écrire le scénario'; }
+}
+
+function renderScenario() {
+  const box = $('scenarioList');
+  box.innerHTML = '';
+  scenes.forEach((s, i) => {
+    const d = document.createElement('div');
+    d.className = 'scene-item'; d.style.flexDirection = 'column';
+    d.innerHTML = '<label></label><textarea class="n"></textarea><label>Plan visuel (en anglais)</label><textarea class="v"></textarea><button class="btn-red" style="margin:0">🗑️ Supprimer cette scène</button>';
+    d.querySelector('label').textContent = 'Scène ' + (i + 1) + ' : narration';
+    const n = d.querySelector('.n'), v = d.querySelector('.v');
+    n.value = s.narration_text || ''; v.value = s.visual_prompt || '';
+    n.oninput = () => { s.narration_text = n.value; saveDraft(); };
+    v.oninput = () => { s.visual_prompt = v.value; saveDraft(); };
+    d.querySelector('button').onclick = () => { if (scenes.length > 1) { scenes.splice(i, 1); renderScenario(); } };
+    box.appendChild(d);
+  });
+  saveDraft();
+}
+
+async function makeImage(key, prompt, size) {
+  const ratio = size.gw > size.gh ? '16:9' : size.gw < size.gh ? '9:16' : '1:1';
+  let last;
+  for (const m of MODELS_IMAGE) {
+    try {
+      const r = await agnesFetch(AGNES_BASE + '/images/generations', {
+        method: 'POST', headers: authHeaders(key),
+        body: JSON.stringify({ model: m, prompt, size: '1K', ratio, extra_body: { response_format: 'url' } })
+      }, 2);
+      const d = await r.json();
+      const u = d.data && d.data[0] && d.data[0].url;
+      if (u) return u;
+      last = new Error('Pas d\'image : ' + JSON.stringify(d).slice(0, 150));
+    } catch (e) { last = e; }
+  }
+  throw last;
+}
+
+function saveDraft() {
+  try { localStorage.setItem('novaDraft', JSON.stringify({ scenes, topic: $('topicInput').value, fmt: currentFormat, lang: $('langSelect').value, agent: $('agentSelect').value, count: $('sceneCount').value, mode: $('modeSelect').value })); } catch (e) {}
+}
+function loadDraft() {
+  try {
+    const d = JSON.parse(localStorage.getItem('novaDraft') || 'null');
+    if (!d || !Array.isArray(d.scenes) || !d.scenes.length) return;
+    $('topicInput').value = d.topic || ''; $('langSelect').value = d.lang; $('agentSelect').value = d.agent;
+    $('sceneCount').value = d.count; $('modeSelect').value = d.mode;
+    if (FORMATS[d.fmt]) currentFormat = d.fmt;
+    document.querySelectorAll('.format-card').forEach(c => c.classList.toggle('active', c.querySelector('.format-title').textContent === currentFormat));
+    scenes = d.scenes; lastTitle = (d.topic || '').slice(0, 40);
+    renderScenario(); $('scenarioCard').style.display = 'block';
+  } catch (e) {}
+}
+
+let run = null;
+
+async function buildSlot(slot) {
+  const { key, mode, size, fmt, agent } = run, sc = slot.scene;
+  cardStatus(slot.card, 'Génération...');
+  const vp = (agent && !String(sc.visual_prompt).includes(agent) ? agent + '. ' : '') + sc.visual_prompt + '. ' + fmt.style + (mode === 'video' ? ', realistic motion.' : '.');
+  const url = mode === 'video' ? await makeClip(key, vp, size, sec => cardStatus(slot.card, 'Génération... ' + sec + ' s')) : await makeImage(key, vp, size);
+  slot.url = url; slot.blob = await fetchBlob(url);
+  if (slot.blob && !slot.voice) slot.voice = await fetchVoice(sc.narration_text, run.lang, run.female);
+  cardStatus(slot.card, '✅ Scène prête'); showClip(slot.card, url, mode);
+}
+function addRetry(slot) {
+  const b = document.createElement('button');
+  b.className = 'btn-blue'; b.style.cssText = 'margin:.5rem 0 0;padding:.6rem;font-size:.8rem';
+  b.textContent = '🔄 Refaire cette scène';
+  b.onclick = () => redoScene(slot);
+  slot.card.querySelector('.scene-content').appendChild(b);
+}
+async function assemble() {
+  const items = run.slots.filter(x => x.blob).map(x => ({ text: x.scene.narration_text, blob: x.blob, voice: x.voice, mode: run.mode }));
+  if (!items.length) { setStatus('Les scènes sont prêtes mais le navigateur ne peut pas les assembler (accès bloqué par le serveur). Ouvre-les une par une pour les télécharger.', true); return false; }
+  setStatus('Assemblage de la vidéo finale... Garde cet écran ouvert.');
+  await renderFinal(items, run.size, run.fmt);
+  return true;
+}
+async function redoScene(slot) {
+  if (!run) return;
+  const btns = document.querySelectorAll('#scenesContainer button');
+  btns.forEach(x => x.disabled = true);
+  $('previewArea').style.display = 'none';
+  try {
+    await audioCtx.resume();
+    setStatus('Nouvelle génération de cette scène...');
+    await buildSlot(slot);
+    if (await assemble()) setStatus('✅ Vidéo mise à jour !');
+  } catch (e) { cardStatus(slot.card, '❌ ' + e.message); setStatus('Erreur : ' + e.message, true); }
+  finally { btns.forEach(x => x.disabled = false); }
+}
+
+async function generateMedia() {
+  const key = $('agnesApiKey').value.trim(), lang = $('langSelect').value, agent = $('agentSelect').value;
+  const mode = $('modeSelect').value, fmt = FORMATS[currentFormat], size = SIZES[fmt.o];
+  scenes = scenes.filter(s => (s.narration_text || '').trim() && (s.visual_prompt || '').trim());
+  if (!scenes.length) { alert('Ajoute une narration et un plan pour au moins une scène.'); return; }
+  const btn = $('mediaBtn');
+  btn.disabled = true; btn.textContent = '⏳ Génération en cours...';
+  $('workspace').style.display = 'block'; $('previewArea').style.display = 'none'; $('kit').style.display = 'none';
+  $('scenesContainer').innerHTML = ''; videoBlob = null;
+  $('workspace').scrollIntoView({ behavior: 'smooth' });
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  await audioCtx.resume();
+  let wake = null;
+  try { if (navigator.wakeLock) wake = await navigator.wakeLock.request('screen'); } catch (e) {}
+  run = { key, mode, size, fmt, lang, agent, female: !agent || /woman/i.test(agent), slots: [] };
+  try {
+    for (let i = 0; i < scenes.length; i++) {
+      const slot = { scene: { narration_text: scenes[i].narration_text, visual_prompt: scenes[i].visual_prompt }, card: addCard(scenes[i].narration_text, fmt) };
+      run.slots.push(slot);
+      setStatus('Scène ' + (i + 1) + '/' + scenes.length + ' en cours...');
+      try { await buildSlot(slot); } catch (e) { cardStatus(slot.card, '❌ ' + e.message); }
+      addRetry(slot);
+    }
+    if (!run.slots.some(x => x.url)) throw new Error("Aucune scène n'a pu être générée. Vérifie ta clé et ton quota.");
+    if (run.slots.some(x => x.blob) && run.slots.every(x => !x.voice)) alert("La voix n'a pas pu être chargée : la vidéo aura des sous-titres mais pas de voix.");
+    if (await assemble()) setStatus('✅ Vidéo terminée ! Une scène ne te plaît pas ? Utilise « Refaire cette scène ».');
+  } catch (e) { setStatus('Erreur : ' + e.message, true); }
+  finally { try { wake && wake.release(); } catch (e) {} btn.disabled = false; btn.textContent = '2. Générer la vidéo'; }
+}
+
+async function makeKit() {
+  const key = $('agnesApiKey').value.trim(), k = $('kit');
+  k.style.display = 'block'; k.value = '⏳ Rédaction...';
+  try {
+    const prompt = 'Video narration: "' + scenes.map(s => s.narration_text).join(' ') + '". Platform: ' + currentFormat + '. Language: ' + $('langSelect').value +
+      '. Write: 1) a catchy title with a strong hook (max 60 characters), 2) a description of 2 short sentences, 3) 10 relevant hashtags. Plain text, no markdown.';
+    const r = await agnesFetch(AGNES_BASE + '/chat/completions', { method: 'POST', headers: authHeaders(key), body: JSON.stringify({ model: MODEL_TEXT, messages: [{ role: 'user', content: prompt }], temperature: 0.8 }) });
+    const d = await r.json();
+    k.value = d.choices[0].message.content.trim();
+  } catch (e) { k.value = 'Erreur : ' + e.message; }
+}
+
+/* ========= ASSEMBLAGE ========= */
+function pickMime() {
+  const c = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+  for (const m of c) { if (window.MediaRecorder && MediaRecorder.isTypeSupported(m)) return m; }
+  return '';
+}
+function coverDraw(ctx, v, W, H, z = 1) {
+  const vw = v.videoWidth || v.naturalWidth, vh = v.videoHeight || v.naturalHeight;
+  if (!vw || !vh) return;
+  const s = Math.max(W / vw, H / vh) * z, w = vw * s, h = vh * s;
+  ctx.drawImage(v, (W - w) / 2, (H - h) / 2, w, h);
+}
+function drawSubs(ctx, text, W, H, fmt) {
+  const fs = Math.round(W * (fmt.o === 'h' ? 0.032 : 0.048));
+  ctx.font = '700 ' + fs + 'px Inter, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const maxW = W * 0.84, lines = [];
+  let cur = '';
+  for (const w of text.split(/\s+/)) {
+    const t = cur ? cur + ' ' + w : w;
+    if (ctx.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t;
+  }
+  if (cur) lines.push(cur);
+  const lh = fs * 1.3, bottom = H * (fmt.o === 'v' ? 0.78 : 0.9), top = bottom - lines.length * lh;
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  ctx.fillRect(W * 0.04, top - fs * 0.4, W * 0.92, lines.length * lh + fs * 0.8);
+  ctx.fillStyle = '#fff';
+  lines.forEach((l, i) => ctx.fillText(l, W / 2, top + lh * (i + 0.5)));
+}
+
+async function renderFinal(items, size, fmt) {
+  const W = size.cw, H = size.ch;
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  const dest = audioCtx.createMediaStreamDestination();
+  const osc = [];
+  if ($('musicToggle').checked) {
+    const g = audioCtx.createGain(); g.gain.value = 0.02; g.connect(dest);
+    [220, 277.18, 329.63].forEach(f => { const o = audioCtx.createOscillator(); o.type = 'sine'; o.frequency.value = f; o.connect(g); o.start(); osc.push(o); });
+  }
+  const mime = pickMime();
+  videoExt = mime.includes('mp4') ? 'mp4' : 'webm';
+  const stream = new MediaStream([...canvas.captureStream(30).getVideoTracks(), ...dest.stream.getAudioTracks()]);
+  const rec = new MediaRecorder(stream, mime ? { mimeType: mime, videoBitsPerSecond: 4000000 } : {});
+  const chunks = [];
+  rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+  const stopped = new Promise(res => { rec.onstop = res; });
+  rec.start(500);
+
+  for (const it of items) {
+    const isImg = it.mode === 'image';
+    const v = document.createElement(isImg ? 'img' : 'video');
+    if (!isImg) { v.muted = true; v.playsInline = true; v.loop = true; }
+    v.src = URL.createObjectURL(it.blob);
+    await new Promise(r => { v.onloadedmetadata = r; v.onload = r; v.onerror = r; setTimeout(r, 4000); });
+    const vd = isImg ? 5 : (isFinite(v.duration) && v.duration > 0 ? v.duration : 5);
+    const dur = Math.max(vd, it.voice ? it.voice.duration + 0.4 : 0) * 1000;
+    if (!isImg) await v.play().catch(() => {});
+    if (it.voice) { const s = audioCtx.createBufferSource(); s.buffer = it.voice; s.connect(dest); s.start(); }
+    const start = performance.now();
+    await new Promise(res => {
+      const tick = () => {
+        const el = performance.now() - start;
+        if (el >= dur) { res(); return; }
+        ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+        coverDraw(ctx, v, W, H, isImg ? 1 + 0.12 * Math.min(1, el / dur) : 1);
+        drawSubs(ctx, it.text, W, H, fmt);
+        if (el < 400) { ctx.fillStyle = 'rgba(0,0,0,' + (1 - el / 400) + ')'; ctx.fillRect(0, 0, W, H); }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+    if (!isImg) v.pause();
+    URL.revokeObjectURL(v.src);
+  }
+  await sleep(300);
+  rec.stop(); await stopped;
+  osc.forEach(o => { try { o.stop(); } catch (e) {} });
+  videoBlob = new Blob(chunks, { type: (rec.mimeType || mime || 'video/webm').split(';')[0] });
+  const p = $('videoPlayer');
+  p.src = URL.createObjectURL(videoBlob);
+  $('previewArea').style.display = 'block';
+  p.play().catch(() => {});
+  $('previewArea').scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ========= PARTAGE / TÉLÉCHARGEMENT ========= */
+function downloadVideo() {
+  if (!videoBlob) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(videoBlob); a.download = 'novastudio.' + videoExt;
+  document.body.appendChild(a); a.click(); a.remove();
+}
 async function shareVideo() {
   if (!videoBlob) return;
+  const file = new File([videoBlob], 'novastudio.' + videoExt, { type: videoBlob.type });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: 'NovaStudio' }); return; }
+    catch (e) { if (e.name === 'AbortError') return; }
+  }
+  downloadVideo();
+}
+
+/* ========= PROJETS (IndexedDB) ========= */
+function openDB() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('novastudio', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('videos', { keyPath: 'id', autoIncrement: true });
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+async function saveProject() {
+  if (!videoBlob) return;
   try {
-    await navigator.share({ files: [new File([videoBlob], 'video.webm', {type:'video/webm'})], title: 'Nova Video' });
-  } catch(e) { alert("Téléchargement de la vidéo..."); }
+    const d = await openDB();
+    const tx = d.transaction('videos', 'readwrite');
+    tx.objectStore('videos').add({ title: lastTitle, date: Date.now(), blob: videoBlob, ext: videoExt });
+    tx.oncomplete = () => alert('Vidéo sauvegardée dans Mes projets.');
+    tx.onerror = () => alert('Sauvegarde impossible sur cet appareil.');
+  } catch (e) { alert('Sauvegarde impossible : ' + e.message); }
+}
+async function renderProjects() {
+  const box = $('projectsList');
+  box.innerHTML = '';
+  try {
+    const d = await openDB();
+    const req = d.transaction('videos').objectStore('videos').getAll();
+    req.onsuccess = () => {
+      const list = req.result.reverse();
+      if (!list.length) { box.textContent = 'Aucune vidéo sauvegardée pour le moment.'; return; }
+      list.forEach(p => {
+        const div = document.createElement('div'); div.className = 'proj'; div.style.marginBottom = '1.5rem';
+        const t = document.createElement('div'); t.style.fontWeight = '600';
+        t.textContent = (p.title || 'Vidéo') + ' · ' + new Date(p.date).toLocaleDateString('fr-FR');
+        const v = document.createElement('video'); v.controls = true; v.playsInline = true; v.src = URL.createObjectURL(p.blob);
+        const dl = document.createElement('button'); dl.className = 'btn-green'; dl.textContent = '⬇️ Télécharger';
+        dl.onclick = () => { const a = document.createElement('a'); a.href = v.src; a.download = 'novastudio.' + (p.ext || 'webm'); document.body.appendChild(a); a.click(); a.remove(); };
+        const del = document.createElement('button'); del.className = 'btn-red'; del.textContent = '🗑️ Supprimer';
+        del.onclick = async () => { const db2 = await openDB(); const tx = db2.transaction('videos', 'readwrite'); tx.objectStore('videos').delete(p.id); tx.oncomplete = renderProjects; };
+        div.append(t, v, dl, del); box.appendChild(div);
+      });
+    };
+  } catch (e) { box.textContent = 'Projets indisponibles : ' + e.message; }
 }
 </script>
 </body>
-          </html>
+</html>
