@@ -3,14 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>NovaStudio - Ultimate</title>
+<title>NovaStudio - Ultimate V12</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root { 
-  --bg: #0a0a0f; --panel: #14141e; --line: rgba(255, 255, 255, 0.1); 
-  --text: #ffffff; --text-dim: #a1a1aa; --accent: #8b5cf6; 
-  --grad-1: #ec4899; --grad-2: #8b5cf6;
-}
+:root { --bg: #0a0a0f; --panel: #14141e; --line: rgba(255, 255, 255, 0.1); --text: #ffffff; --text-dim: #a1a1aa; --accent: #8b5cf6; --grad-1: #ec4899; --grad-2: #8b5cf6; }
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
 body { background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
@@ -22,7 +18,7 @@ header { display: flex; justify-content: space-between; align-items: center; pad
 .logo-text p { font-size: 0.65rem; color: var(--text-dim); margin-top: 2px; }
 .menu-btn { background: #222; border: 1px solid var(--line); color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; cursor: pointer; }
 
-/* SIDEBAR (MENU 3 POINTS) */
+/* SIDEBAR */
 #sidebar { position: fixed; top: 0; right: -100%; width: 80%; max-width: 320px; height: 100vh; background: var(--panel); border-left: 1px solid var(--line); z-index: 1000; transition: right 0.3s ease; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1rem; box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
 #sidebar.open { right: 0; }
 #sidebar-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 10px; }
@@ -87,9 +83,9 @@ button:disabled { opacity: 0.5; }
 .folder-title { font-weight: 700; font-size: 0.85rem; }
 .folder-count { font-size: 0.7rem; color: var(--text-dim); margin-top: 0.3rem; }
 
-/* CANVAS */
+/* CANVAS & VIDEO */
 #previewArea { display: none; }
-#videoCanvas { width: 100%; max-width: 300px; aspect-ratio: 9/16; background: #000; border-radius: 12px; margin: 0 auto 1rem; display: block; }
+#videoPlayer { width: 100%; max-width: 300px; border-radius: 12px; margin: 0 auto 1rem; display: block; background: #000; }
 
 .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; display: none; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -126,7 +122,7 @@ button:disabled { opacity: 0.5; }
   <div class="hero">
     <div class="hero-badge">✨ EXCLUSIF</div>
     <h2>Crée n'importe quelle<br><span>vidéo, au niveau<br>professionnel</span></h2>
-    <p>Décris ta vidéo, choisis ton format, l'IA s'occupe du reste. TikTok, YouTube, Facebook, dessin animé, publicité, film, série TV...</p>
+    <p>Décris ta vidéo, choisis ton format, l'IA s'occupe du reste.</p>
   </div>
 
   <div class="card" style="padding: 1rem;">
@@ -136,7 +132,7 @@ button:disabled { opacity: 0.5; }
     <div id="settingsContent">
       <label>Clé Agnes (sk-...)</label>
       <input type="password" id="agnesApiKey" placeholder="sk-...">
-      <p style="font-size:0.7rem; color:#10b981; margin-top:5px;">✅ Voix intégrée par défaut (API Google gratuite).</p>
+      <p style="font-size:0.7rem; color:#10b981; margin-top:5px;">✅ Voix et Musique intégrées.</p>
     </div>
   </div>
 
@@ -163,72 +159,38 @@ button:disabled { opacity: 0.5; }
         <div class="format-title">Dessin animé</div>
         <div class="format-ratio">16:9</div>
       </div>
-      <div class="format-card" data-value="Publicité">
-        <div class="format-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">📢</div>
-        <div class="format-title">Publicité</div>
-        <div class="format-ratio">16:9</div>
-      </div>
-      <div class="format-card" data-value="Film">
-        <div class="format-icon" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6;">🎬</div>
-        <div class="format-title">Film</div>
-        <div class="format-ratio">16:9</div>
-      </div>
-      <div class="format-card" data-value="Série TV">
-        <div class="format-icon" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6;">📺</div>
-        <div class="format-title">Série TV</div>
-        <div class="format-ratio">16:9</div>
-      </div>
     </div>
 
     <div class="card-title">2. Détails</div>
-    <label>🤖 Agent IA (Humain virtuel)</label>
+    <label>🤖 Agent IA</label>
     <select id="agentSelect">
       <option value="Photorealistic African woman">Africain (Femme)</option>
       <option value="Photorealistic African man">Africain (Homme)</option>
       <option value="Photorealistic Mixed-race woman">Métis (Femme)</option>
-      <option value="Photorealistic Mixed-race man">Métis (Homme)</option>
       <option value="Photorealistic European woman">Européen (Femme)</option>
-      <option value="Photorealistic European man">Européen (Homme)</option>
       <option value="Photorealistic Asian woman">Asiatique (Femme)</option>
-      <option value="Photorealistic Asian man">Asiatique (Homme)</option>
-      <option value="Photorealistic Middle Eastern woman">Moyen-Orient (Femme)</option>
-      <option value="Photorealistic Middle Eastern man">Moyen-Orient (Homme)</option>
-      <option value="Photorealistic Latino woman">Américain Latino (Femme)</option>
       <option value="Photorealistic Latino man">Américain Latino (Homme)</option>
-      <option value="Photorealistic South American woman">Sud-Américain (Femme)</option>
-      <option value="Photorealistic South American man">Sud-Américain (Homme)</option>
-    </select>
-
-    <label>Langue de la vidéo</label>
-    <select id="langSelect">
-      <option value="Français">Français</option>
-      <option value="Anglais">Anglais</option>
-      <option value="Espagnol">Espagnol</option>
-      <option value="Allemand">Allemand</option>
-      <option value="Italien">Italien</option>
-      <option value="Portugais">Portugais</option>
     </select>
 
     <label>Décris ta vidéo</label>
-    <textarea id="topicInput" placeholder="Ex: L'histoire d'un chat astronaute..."></textarea>
+    <textarea id="topicInput" placeholder="Ex: Un chat qui danse sur une musique disco..."></textarea>
     
-    <label>Scènes (max 6)</label>
-    <input type="number" id="sceneCount" value="2" min="1" max="6">
+    <label>Scènes</label>
+    <input type="number" id="sceneCount" value="3" min="1" max="6">
     
-    <button id="generateScriptBtn" class="btn-primary"><span class="spinner"></span> Générer le scénario</button>
+    <button id="generateBtn" class="btn-primary"><span class="spinner"></span> Générer la vidéo complète</button>
   </div>
 
   <div id="workspace" class="card" style="display:none;">
-    <div class="card-title">3. Médias</div>
+    <div class="card-title">3. Génération en cours</div>
     <div id="scenesContainer"></div>
-    <button id="generateAssetsBtn" class="btn-primary"><span class="spinner"></span> Générer les médias</button>
   </div>
 
   <div id="previewArea" class="card">
     <div class="card-title">4. Rendu final</div>
-    <canvas id="videoCanvas" width="1080" height="1920"></canvas>
-    <button id="renderBtn" class="btn-primary"><span class="spinner"></span> Exporter la vidéo</button>
-    <button id="publishBtn" class="btn-publish" style="display:none;">🚀 Publier & Sauvegarder</button>
+    <video id="videoPlayer" controls playsinline></video>
+    <button id="shareBtn" class="btn-primary" style="background:#3b82f6; display:none;"><span class="spinner"></span> 📤 Partager sur les réseaux</button>
+    <button id="saveBtn" class="btn-publish" style="display:none;">💾 Sauvegarder dans mes projets</button>
   </div>
 </div>
 
@@ -263,7 +225,6 @@ button:disabled { opacity: 0.5; }
 </div>
 
 <script>
-// --- GESTION DES ERREURS ---
 window.onerror = function(msg) {
   const banner = document.getElementById('errorBanner');
   banner.style.display = 'block';
@@ -272,15 +233,20 @@ window.onerror = function(msg) {
   return false;
 };
 
-// --- NAVIGATION ---
-const sidebar = document.getElementById('sidebar');
+const AGNES_BASE = 'https://apihub.agnes-ai.com/v1';
+const AGNES_MODEL = 'agnes-3.0-flash';
+const AGNES_IMG_MODEL = 'agnes-image-2.5-flash';
+const FOLDERS = ['TikTok', 'Facebook', 'YouTube', 'Dessin Animé'];
+let selectedGenre = "TikTok";
+let currentScript = [];
+let generatedVideoBlob = null;
+
+// NAVIGATION
 document.getElementById('btnOpenMenu').addEventListener('click', () => {
-  sidebar.classList.add('open');
-  sidebar.style.right = '0px';
+  document.getElementById('sidebar').classList.add('open');
 });
 document.getElementById('sidebar-close').addEventListener('click', () => {
-  sidebar.classList.remove('open');
-  sidebar.style.right = '-100%';
+  document.getElementById('sidebar').classList.remove('open');
 });
 document.getElementById('menuStudio').addEventListener('click', () => showSection('studio'));
 document.getElementById('menuAgent').addEventListener('click', () => showSection('agent'));
@@ -288,27 +254,17 @@ document.getElementById('menuProjects').addEventListener('click', () => showSect
 
 function showSection(id) {
   document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebar').style.right = '-100%';
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.getElementById(id + 'Section').classList.add('active');
   if(id === 'projects') renderFolders();
   if(id === 'agent') renderTasks();
 }
 
-// --- CONFIGURATION ---
-const AGNES_BASE = 'https://apihub.agnes-ai.com/v1';
-const AGNES_MODEL = 'agnes-3.0-flash';
-const AGNES_IMG_MODEL = 'agnes-image-2.5-flash';
-const FOLDERS = ['TikTok', 'Facebook', 'YouTube', 'Dessin Animé', 'Publicité', 'Film', 'Série TV'];
-let selectedGenre = "TikTok";
-
-// --- UI SETTINGS ---
 document.getElementById('btnToggleSettings').addEventListener('click', () => {
   const s = document.getElementById('settingsContent');
   s.style.display = s.style.display === 'block' ? 'none' : 'block';
 });
 
-// --- FORMAT SELECTION ---
 document.getElementById('formatGrid').addEventListener('click', (e) => {
   const card = e.target.closest('.format-card');
   if (!card) return;
@@ -317,133 +273,50 @@ document.getElementById('formatGrid').addEventListener('click', (e) => {
   selectedGenre = card.dataset.value;
 });
 
-// --- CHARGEMENT LOCAL STORAGE ---
+// INIT
 window.addEventListener('DOMContentLoaded', () => {
   const savedKey = localStorage.getItem('agnesApiKey');
   if (savedKey) document.getElementById('agnesApiKey').value = savedKey;
-  
   if(!localStorage.getItem('vm_projects')) localStorage.setItem('vm_projects', JSON.stringify({}));
   if(!localStorage.getItem('vm_tasks')) localStorage.setItem('vm_tasks', JSON.stringify([]));
-  
   renderTasks();
   renderFolders();
 });
+document.getElementById('agnesApiKey').addEventListener('change', (e) => localStorage.setItem('agnesApiKey', e.target.value.trim()));
 
-document.getElementById('agnesApiKey').addEventListener('change', (e) => {
-  localStorage.setItem('agnesApiKey', e.target.value.trim());
-});
-
-// --- VOIX GOOGLE GRATUITE ---
+// VOIX
 function getVoiceUrl(text, lang) {
   let voice = 'fr-FR-Wavenet-A';
-  if(lang === 'Anglais') voice = 'en-US-Wavenet-A';
-  if(lang === 'Espagnol') voice = 'es-ES-Wavenet-A';
-  if(lang === 'Allemand') voice = 'de-DE-Wavenet-A';
-  if(lang === 'Italien') voice = 'it-IT-Wavenet-A';
-  if(lang === 'Portugais') voice = 'pt-BR-Wavenet-A';
   return `https://api.streamelements.com/kappa/v2/speech?voice=${voice}&text=${encodeURIComponent(text)}`;
 }
 
-// --- AGENT PLANIFICATEUR ---
-document.getElementById('sendChatBtn').addEventListener('click', async () => {
-  const text = document.getElementById('chatInput').value.trim();
-  if (!text) return;
-  const apiKey = document.getElementById('agnesApiKey').value.trim();
-  if (!apiKey) { alert("Ajoutez votre clé Agnes."); return; }
-
-  const chatMessages = document.getElementById('chatMessages');
-  chatMessages.innerHTML += `<div class="msg user">${text}</div>`;
-  document.getElementById('chatInput').value = '';
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-  
-  const typingId = 'typing_' + Date.now();
-  chatMessages.innerHTML += `<div class="msg agent" id="${typingId}">🤖 Analyse...</div>`;
-
-  try {
-    const now = new Date();
-    const prompt = `Tu es un agent IA. Nous sommes le ${now.toLocaleString()}.
-Extrais le type (TikTok, Facebook, YouTube, Dessin Animé, Publicité, Film, Série TV), le sujet et l'heure (timestamp ms).
-JSON attendu : { "platform": "...", "topic": "...", "timestamp": 1234567890, "message": "Confirmation" }
-Ordre : "${text}"`;
-
-    const res = await fetch(`${AGNES_BASE}/chat/completions`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-      body: JSON.stringify({ model: AGNES_MODEL, messages: [{ role: 'user', content: prompt }], temperature: 0.2 })
-    });
-    const data = await res.json();
-    let content = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
-    const task = JSON.parse(content);
-
-    let tasks = JSON.parse(localStorage.getItem('vm_tasks'));
-    task.id = Date.now(); task.status = 'En attente';
-    tasks.push(task);
-    localStorage.setItem('vm_tasks', JSON.stringify(tasks));
-
-    document.getElementById(typingId).textContent = task.message + ` (Programmé : ${new Date(task.timestamp).toLocaleString()})`;
-    renderTasks();
-  } catch (e) {
-    document.getElementById(typingId).textContent = "Désolé, je n'ai pas compris l'heure ou la demande.";
-  }
-});
-
-function renderTasks() {
-  const tasksList = document.getElementById('tasksList');
-  let tasks = JSON.parse(localStorage.getItem('vm_tasks') || '[]');
-  if(tasks.length === 0) { tasksList.innerHTML = "<div style='font-size:0.8rem; color:#a1a1aa;'>Aucune tâche.</div>"; return; }
-  tasksList.innerHTML = tasks.map(t => `
-    <div style="background:#1a1a24; padding:0.8rem; border-radius:8px; margin-bottom:0.5rem; font-size:0.8rem; display:flex; justify-content:space-between;">
-      <div><strong>${t.platform}</strong> : ${t.topic}<br><span style="font-size:0.7rem; color:#a1a1aa;">${new Date(t.timestamp).toLocaleString()}</span></div>
-      <div style="color:var(--accent); font-weight:bold;">${t.status}</div>
-    </div>
-  `).join('');
-}
-
-// CRON JOB (Toutes les 10 secondes)
-setInterval(() => {
-  let tasks = JSON.parse(localStorage.getItem('vm_tasks') || '[]');
-  const now = Date.now();
-  let updated = false;
-  tasks.forEach(task => {
-    if (task.status === 'En attente' && now >= task.timestamp) {
-      task.status = 'En cours...';
-      updated = true;
-      executeAgentTask(task);
-    }
-  });
-  if (updated) localStorage.setItem('vm_tasks', JSON.stringify(tasks));
-  renderTasks();
-}, 10000);
-
-async function executeAgentTask(task) {
-  alert(`🤖 L'Agent démarre : ${task.platform} sur "${task.topic}"`);
-  showSection('studio'); 
-  document.querySelectorAll('.format-card').forEach(c => {
-    c.classList.toggle('active', c.dataset.value === task.platform);
-  });
-  selectedGenre = task.platform;
-  document.getElementById('topicInput').value = task.topic;
-  generateScript(); // Lance la génération automatiquement
-}
-
-// --- STUDIO GENERATION ---
-let currentScript = [], projectAssets = [];
-function showLoading(id, text) { const btn = document.getElementById(id); btn.disabled = true; btn.dataset.orig = btn.innerHTML; btn.innerHTML = `<span class="spinner" style="display:inline-block"></span> ${text}`; }
-function stopLoading(id) { const btn = document.getElementById(id); btn.disabled = false; btn.innerHTML = btn.dataset.orig; }
-
-document.getElementById('generateScriptBtn').addEventListener('click', async () => {
+// PIPELINE DE GENERATION
+document.getElementById('generateBtn').addEventListener('click', async () => {
   const apiKey = document.getElementById('agnesApiKey').value.trim();
   const topic = document.getElementById('topicInput').value.trim();
   const agent = document.getElementById('agentSelect').value;
-  const lang = document.getElementById('langSelect').value;
   const count = parseInt(document.getElementById('sceneCount').value) || 2;
-
+  
   if (!apiKey || !topic) { alert("Clé API ou Sujet manquant."); return; }
-  showLoading('generateScriptBtn', "Rédaction...");
-
-  const prompt = `Tu es un scénariste. Sujet: ${topic}. Format: ${selectedGenre}. Langue: ${lang}. Personnage: ${agent}.
-Découpe en ${count} scènes. Retourne UNIQUEMENT un tableau JSON : [{"scene_number": 1, "narration_text": "...", "visual_prompt": "English prompt..."}]`;
+  
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner" style="display:inline-block"></span> Création du scénario...`;
+  
+  document.getElementById('workspace').style.display = 'block';
+  document.getElementById('previewArea').style.display = 'block';
+  document.getElementById('scenesContainer').innerHTML = '';
+  document.getElementById('videoPlayer').style.display = 'none';
+  document.getElementById('shareBtn').style.display = 'none';
+  document.getElementById('saveBtn').style.display = 'none';
 
   try {
+    // 1. SCENARIO (IA très puissante)
+    const prompt = `Tu es un réalisateur hollywoodien expert en vidéos virales. 
+Sujet: "${topic}". Personnage: ${agent}. Format: ${selectedGenre}.
+Tu dois créer exactement ${count} scènes très descriptives pour que l'image soit parfaite (ex: si le sujet est "un chat qui danse", décris le chat en train de danser).
+Retourne UNIQUEMENT un tableau JSON : [{"scene_number": 1, "narration_text": "Texte dit par la voix off", "visual_prompt": "English prompt for the image..."}]`;
+
     const res = await fetch(`${AGNES_BASE}/chat/completions`, {
       method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
       body: JSON.stringify({ model: AGNES_MODEL, messages: [{ role: 'user', content: prompt }], temperature: 0.7 })
@@ -451,154 +324,192 @@ Découpe en ${count} scènes. Retourne UNIQUEMENT un tableau JSON : [{"scene_num
     const data = await res.json();
     currentScript = JSON.parse(data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim());
     
-    document.getElementById('scenesContainer').innerHTML = currentScript.map((s, i) => `
-      <div class="scene-item">
-        <div class="scene-media" id="media-${i}">Image ${s.scene_number}</div>
-        <div class="scene-content">
-          <textarea id="text-${i}">${s.narration_text}</textarea>
-          <textarea id="prompt-${i}">${s.visual_prompt}</textarea>
+    // 2. IMAGES & VOIX
+    let projectAssets = [];
+    for (let i = 0; i < currentScript.length; i++) {
+      btn.innerHTML = `<span class="spinner" style="display:inline-block"></span> Génération image ${i+1}/${currentScript.length}...`;
+      
+      document.getElementById('scenesContainer').innerHTML += `
+        <div class="scene-item">
+          <div class="scene-media" id="media-${i}">Chargement...</div>
+          <div class="scene-content">
+            <textarea readonly>${currentScript[i].narration_text}</textarea>
+          </div>
         </div>
-      </div>
-    `).join('');
-    document.getElementById('workspace').style.display = 'block';
-    document.getElementById('previewArea').style.display = 'block';
-  } catch (e) { alert("Erreur scénario : " + e.message); } finally { stopLoading('generateScriptBtn'); }
-});
+      `;
 
-document.getElementById('generateAssetsBtn').addEventListener('click', async () => {
-  const agnesKey = document.getElementById('agnesApiKey').value.trim();
-  const lang = document.getElementById('langSelect').value;
-  if (!agnesKey) { alert("Vérifiez votre clé Agnes."); return; }
-  
-  showLoading('generateAssetsBtn', "Génération...");
-  projectAssets = [];
-
-  for (let i = 0; i < currentScript.length; i++) {
-    const text = document.getElementById(`text-${i}`).value;
-    const prompt = document.getElementById(`prompt-${i}`).value;
-    
-    let imageUrl = '';
-    try {
-      const imgRes = await fetch(`${AGNES_BASE}/images/generations`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${agnesKey}` },
-        body: JSON.stringify({ model: AGNES_IMG_MODEL, prompt: prompt, size: '1K', ratio: '9:16', extra_body: { response_format: 'url' } })
-      });
-      if(!imgRes.ok) throw new Error("Image Error");
-      const imgData = await imgRes.json();
-      imageUrl = imgData.data[0].url;
-      document.getElementById(`media-${i}`).innerHTML = `<img src="${imageUrl}">`;
-    } catch(e) { 
-      imageUrl = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDgwIiBoZWlnaHQ9IjE5MjAiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzhiNWNmNjtzdG9wLW9wYWNpdHk6MSIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNlYzQ4OTk7c3RvcC1vcGFjaXR5OjEiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwODAiIGhlaWdodD0iMTkyMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjU0MCIgeT0iOTYwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSI2MCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlIElBPC90ZXh0Pjwvc3ZnPg=='; 
-      document.getElementById(`media-${i}`).innerHTML = `<img src="${imageUrl}">`;
+      // Image
+      let imageUrl = '';
+      try {
+        const imgRes = await fetch(`${AGNES_BASE}/images/generations`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+          body: JSON.stringify({ model: AGNES_IMG_MODEL, prompt: currentScript[i].visual_prompt, size: '1K', ratio: '9:16', extra_body: { response_format: 'url' } })
+        });
+        const imgData = await imgRes.json();
+        imageUrl = imgData.data[0].url;
+        document.getElementById(`media-${i}`).innerHTML = `<img src="${imageUrl}">`;
+      } catch(e) {
+        // Image de secours
+        imageUrl = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDgwIiBoZWlnaHQ9IjE5MjAiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzhiNWNmNjtzdG9wLW9wYWNpdHk6MSIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNlYzQ4OTk7c3RvcC1vcGFjaXR5OjEiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwODAiIGhlaWdodD0iMTkyMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjU0MCIgeT0iOTYwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSI2MCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlIElBPC90ZXh0Pjwvc3ZnPg==';
+        document.getElementById(`media-${i}`).innerHTML = `<img src="${imageUrl}">`;
+      }
+      
+      // Audio
+      let audioUrl = getVoiceUrl(currentScript[i].narration_text, 'Français');
+      projectAssets.push({ text: currentScript[i].narration_text, imageUrl, audioUrl });
     }
 
-    let audioUrl = getVoiceUrl(text, lang);
-    projectAssets.push({ text, imageUrl, audioUrl });
+    // 3. VIDEO & MUSIQUE
+    btn.innerHTML = `<span class="spinner" style="display:inline-block"></span> Assemblage de la vidéo...`;
+    await renderVideo(projectAssets);
+    
+  } catch (e) {
+    alert("Erreur : " + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `Générer la vidéo complète`;
   }
-  
-  stopLoading('generateAssetsBtn');
-  alert("Médias générés ! Vous pouvez exporter la vidéo.");
 });
 
-// --- RENDU VIDEO ---
-document.getElementById('renderBtn').addEventListener('click', async () => {
-  if (projectAssets.length === 0) { alert("Générez les médias d'abord."); return; }
-  showLoading('renderBtn', "Rendu en cours...");
-  
-  const canvas = document.getElementById('videoCanvas');
+async function renderVideo(projectAssets) {
+  const canvas = document.createElement('canvas'); // Canvas caché
+  canvas.width = 1080; canvas.height = 1920;
   const ctx = canvas.getContext('2d');
   
   let mediaRecorder, chunks = [];
   const videoStream = canvas.captureStream(30);
   
-  try { mediaRecorder = new MediaRecorder(videoStream, { mimeType: 'video/webm;codecs=vp8' }); } 
-  catch (e) { mediaRecorder = new MediaRecorder(videoStream); }
+  // Musique d'ambiance (Web Audio API)
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const dest = audioCtx.createMediaStreamDestination();
+  const osc = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
+  osc.type = 'sine'; osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+  gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); // Volume bas
+  osc.connect(gainNode); gainNode.connect(dest); osc.start();
+
+  // Mélange Video + Audio (Voix + Musique)
+  const combinedStream = new MediaStream([...videoStream.getVideoTracks(), ...dest.stream.getAudioTracks()]);
+  
+  try { mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm;codecs=vp9,opus' }); } 
+  catch (e) { mediaRecorder = new MediaRecorder(combinedStream); }
 
   mediaRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
-  mediaRecorder.onstop = () => {
-    const blob = new Blob(chunks, { type: 'video/webm' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'nova_video.webm'; a.click();
-    stopLoading('renderBtn'); 
-    document.getElementById('publishBtn').style.display = 'flex';
-  };
   
-  mediaRecorder.start();
-
-  for (let i = 0; i < projectAssets.length; i++) {
-    const asset = projectAssets[i];
+  return new Promise((resolve) => {
+    mediaRecorder.onstop = () => {
+      osc.stop();
+      generatedVideoBlob = new Blob(chunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(generatedVideoBlob);
+      
+      // Afficher dans le lecteur vidéo
+      const videoPlayer = document.getElementById('videoPlayer');
+      videoPlayer.src = url;
+      videoPlayer.style.display = 'block';
+      videoPlayer.play().catch(()=>{});
+      
+      document.getElementById('shareBtn').style.display = 'flex';
+      document.getElementById('saveBtn').style.display = 'flex';
+      resolve();
+    };
     
-    let mediaEl = new Image(); 
-    mediaEl.src = asset.imageUrl;
-    await new Promise(r => { mediaEl.onload = r; mediaEl.onerror = r; setTimeout(r, 3000); });
+    mediaRecorder.start();
 
-    let duration = 3000; 
-    let audio = new Audio(asset.audioUrl);
-    
-    await new Promise(r => {
-      audio.onloadedmetadata = () => { duration = audio.duration * 1000; r(); };
-      audio.onerror = r;
-      setTimeout(r, 3000); 
-    });
-
-    audio.play().catch(()=>{});
-
-    const startTime = performance.now();
-    await new Promise(resolve => {
-      function drawFrame(time) {
-        const elapsed = time - startTime;
-        if (elapsed >= duration) { resolve(); return; }
+    (async () => {
+      for (let i = 0; i < projectAssets.length; i++) {
+        const asset = projectAssets[i];
         
-        ctx.fillStyle = '#000';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        let mediaEl = new Image(); 
+        mediaEl.src = asset.imageUrl;
+        await new Promise(r => { mediaEl.onload = r; mediaEl.onerror = r; setTimeout(r, 3000); });
+
+        let duration = 3000; 
+        let audio = new Audio(asset.audioUrl);
+        const audioSource = audioCtx.createMediaElementSource(audio);
+        audioSource.connect(dest); // Route la voix vers l'enregistreur
         
-        const progress = elapsed / duration;
-        const scale = 1 + (progress * 0.05);
-        if(mediaEl.complete && mediaEl.width) {
-          ctx.save(); ctx.translate(canvas.width/2, canvas.height/2); ctx.scale(scale, scale);
-          ctx.drawImage(mediaEl, -canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
-          ctx.restore();
-        }
+        await new Promise(r => {
+          audio.onloadedmetadata = () => { duration = audio.duration * 1000; r(); };
+          audio.onerror = r;
+          setTimeout(r, 3000); 
+        });
 
-        const gradient = ctx.createLinearGradient(0, canvas.height - 400, 0, canvas.height);
-        gradient.addColorStop(0, 'rgba(0,0,0,0)'); gradient.addColorStop(1, 'rgba(0,0,0,0.8)');
-        ctx.fillStyle = gradient; ctx.fillRect(0, canvas.height - 400, canvas.width, 400);
+        audio.play().catch(()=>{});
 
-        ctx.fillStyle = 'white'; ctx.font = 'bold 45px Inter, sans-serif'; ctx.textAlign = 'center';
-        const words = asset.text.split(' ');
-        let line = ''; let y = canvas.height - 150;
-        for (let n = 0; n < words.length; n++) {
-          const testLine = line + words[n] + ' ';
-          if (ctx.measureText(testLine).width > 900 && n > 0) {
-            ctx.fillText(line, canvas.width/2, y); line = words[n] + ' '; y += 55;
-          } else { line = testLine; }
-        }
-        ctx.fillText(line, canvas.width/2, y);
-        requestAnimationFrame(drawFrame);
+        const startTime = performance.now();
+        await new Promise(res => {
+          function drawFrame(time) {
+            const elapsed = time - startTime;
+            if (elapsed >= duration) { res(); return; }
+            
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            const progress = elapsed / duration;
+            const scale = 1 + (progress * 0.05); // Effet de zoom (Ken Burns)
+            if(mediaEl.complete && mediaEl.width) {
+              ctx.save(); ctx.translate(canvas.width/2, canvas.height/2); ctx.scale(scale, scale);
+              ctx.drawImage(mediaEl, -canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
+              ctx.restore();
+            }
+
+            const gradient = ctx.createLinearGradient(0, canvas.height - 400, 0, canvas.height);
+            gradient.addColorStop(0, 'rgba(0,0,0,0)'); gradient.addColorStop(1, 'rgba(0,0,0,0.8)');
+            ctx.fillStyle = gradient; ctx.fillRect(0, canvas.height - 400, canvas.width, 400);
+
+            ctx.fillStyle = 'white'; ctx.font = 'bold 45px Inter, sans-serif'; ctx.textAlign = 'center';
+            const words = asset.text.split(' ');
+            let line = ''; let y = canvas.height - 150;
+            for (let n = 0; n < words.length; n++) {
+              const testLine = line + words[n] + ' ';
+              if (ctx.measureText(testLine).width > 900 && n > 0) {
+                ctx.fillText(line, canvas.width/2, y); line = words[n] + ' '; y += 55;
+              } else { line = testLine; }
+            }
+            ctx.fillText(line, canvas.width/2, y);
+            requestAnimationFrame(drawFrame);
+          }
+          requestAnimationFrame(drawFrame);
+        });
       }
-      requestAnimationFrame(drawFrame);
+      mediaRecorder.stop();
+    })();
+  });
+}
+
+// PARTAGE NATIF
+document.getElementById('shareBtn').addEventListener('click', async () => {
+  if (!generatedVideoBlob) return;
+  try {
+    const file = new File([generatedVideoBlob], 'nova_video.webm', { type: 'video/webm' });
+    await navigator.share({
+      title: 'Ma vidéo NovaStudio',
+      text: 'Regarde ma vidéo générée par IA !',
+      files: [file]
     });
+  } catch (error) {
+    alert("Le partage direct n'est pas supporté sur ce navigateur. La vidéo va être téléchargée à la place.");
+    const a = document.createElement('a'); a.href = URL.createObjectURL(generatedVideoBlob); a.download = 'nova_video.webm'; a.click();
   }
-  mediaRecorder.stop();
 });
 
-// --- SAUVEGARDE DANS PROJETS ---
-document.getElementById('publishBtn').addEventListener('click', () => {
-  const topic = document.getElementById('topicInput').value;
-  if(!topic) return;
+// SAUVEGARDE PROJET
+document.getElementById('saveBtn').addEventListener('click', () => {
+  const topic = document.getElementById('topicInput').value || "Vidéo sans titre";
   let projects = JSON.parse(localStorage.getItem('vm_projects') || '{}');
   if(!projects[selectedGenre]) projects[selectedGenre] = [];
   projects[selectedGenre].push({ topic, date: new Date().toLocaleString() });
   localStorage.setItem('vm_projects', JSON.stringify(projects));
-  alert(`✅ Vidéo sauvegardée dans le dossier : ${selectedGenre}`);
-  document.getElementById('publishBtn').style.display = 'none';
+  alert(`✅ Vidéo sauvegardée dans : ${selectedGenre}`);
 });
 
+// AFFICHAGE PROJETS
 function renderFolders() {
   const grid = document.getElementById('foldersGrid');
   const projects = JSON.parse(localStorage.getItem('vm_projects') || '{}');
   grid.innerHTML = FOLDERS.map(f => {
     const count = (projects[f] || []).length;
-    const icon = f === 'TikTok' ? '🎵' : f === 'YouTube' ? '▶️' : f === 'Facebook' ? '📘' : f === 'Publicité' ? '📢' : '📁';
+    const icon = f === 'TikTok' ? '🎵' : f === 'YouTube' ? '▶️' : f === 'Facebook' ? '📘' : '📁';
     return `<div class="folder" onclick="openFolder('${f}')"><div class="folder-icon">${icon}</div><div class="folder-title">${f}</div><div class="folder-count">${count} vidéo(s)</div></div>`;
   }).join('');
 }
