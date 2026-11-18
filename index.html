@@ -311,7 +311,12 @@ async function fetchVoice(text, lang, female) {
   } catch (e) { return null; }
 }
 async function fetchBlob(url) {
-  try { const r = await fetch(url); if (!r.ok) return null; return await r.blob(); } catch (e) { return null; }
+  const tries = [url];
+  if (!url.startsWith('data:')) tries.push('https://api.allorigins.win/raw?url=' + encodeURIComponent(url));
+  for (const u of tries) {
+    try { const r = await fetch(u); if (r.ok) { const b = await r.blob(); if (b.size) return b; } } catch (e) {}
+  }
+  return null;
 }
 
 /* ========= GÉNÉRATION ========= */
@@ -333,7 +338,7 @@ function showClip(card, url, mode) {
   if (mode !== 'image') { v.controls = true; v.muted = true; v.loop = true; v.playsInline = true; }
   const m = card.querySelector('.scene-media'); m.innerHTML = ''; m.appendChild(v);
   card.querySelectorAll('.scene-content a').forEach(x => x.remove());
-  const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Ouvrir / télécharger cette scène';
+  const a = document.createElement('a'); a.href = url; if (url.startsWith('data:')) a.download = 'scene.png'; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Ouvrir / télécharger cette scène';
   card.querySelector('.scene-content').appendChild(a);
 }
 
@@ -381,11 +386,12 @@ async function makeImage(key, prompt, size) {
     try {
       const r = await agnesFetch(AGNES_BASE + '/images/generations', {
         method: 'POST', headers: authHeaders(key),
-        body: JSON.stringify({ model: m, prompt, size: '1K', ratio, extra_body: { response_format: 'url' } })
+        body: JSON.stringify({ model: m, prompt, size: '1K', ratio, response_format: 'b64_json', extra_body: { response_format: 'b64_json' } })
       }, 2);
       const d = await r.json();
-      const u = d.data && d.data[0] && d.data[0].url;
-      if (u) return u;
+      const it = d.data && d.data[0];
+      if (it && it.b64_json) return 'data:image/png;base64,' + it.b64_json;
+      if (it && it.url) return it.url;
       last = new Error('Pas d\'image : ' + JSON.stringify(d).slice(0, 150));
     } catch (e) { last = e; }
   }
