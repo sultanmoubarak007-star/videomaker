@@ -113,7 +113,7 @@ button:disabled{opacity:.6}
     <textarea id="topicInput" placeholder="Ex : Des enfants courent derrière le ballon, le but est marqué..."></textarea>
 
     <label>Style de narration</label>
-    <select id="styleSelect" onchange="if (this.value === 'sport') $('modeSelect').value = 'puter'">
+    <select id="styleSelect" onchange="if (this.value === 'sport') $('modeSelect').value = 'video'">
       <option value="">Narrateur classique</option>
       <option value="sport">⚽ Commentateur de match de foot (TV)</option>
       <option value="trailer">🎬 Voix de bande-annonce</option>
@@ -124,7 +124,7 @@ button:disabled{opacity:.6}
     <input type="number" id="sceneCount" value="3" min="1" max="6">
 
     <label>Mode de génération</label>
-    <select id="modeSelect"><option value="puter">Vraie vidéo — Puter (conseillé)</option><option value="video">Vraie vidéo — Agnes (1 à 3 min par scène)</option><option value="image">Diaporama d'images animées (rapide, sans vrai mouvement)</option></select>
+    <select id="modeSelect"><option value="video">Vraie vidéo — Agnes (gratuit, 1 à 3 min par scène)</option><option value="manual">Sans crédit : j'importe mes propres clips</option><option value="puter">Vraie vidéo — Puter (utilise des crédits)</option><option value="image">Diaporama d'images animées (rapide, sans vrai mouvement)</option></select>
 
     <div class="check"><input type="checkbox" id="musicToggle" checked><span>Musique ou ambiance de stade en fond</span></div>
 
@@ -318,6 +318,7 @@ async function makeClip(key, prompt, size, onProgress) {
 }
 
 /* ========= VOIX ========= */
+let puterVoiceBroke = false;
 const LANGCODE = { 'Français': 'fr', 'Anglais': 'en', 'Espagnol': 'es', 'Allemand': 'de', 'Italien': 'it', 'Portugais': 'pt' };
 const PUTER_LANG = { 'Français': 'fr-FR', 'Anglais': 'en-GB', 'Espagnol': 'es-ES', 'Allemand': 'de-DE', 'Italien': 'it-IT', 'Portugais': 'pt-BR' };
 function loadPuter() {
@@ -342,11 +343,11 @@ async function fetchVoice(text, lang, female) {
   const v = VOICES[lang][female ? 1 : 0];
   let blob = null;
   try {
-    if (window.puter && puter.auth.isSignedIn()) {
+    if (!puterVoiceBroke && window.puter && puter.auth.isSignedIn()) {
       const audio = await puter.ai.txt2speech(text, { voice: v, engine: 'standard', language: PUTER_LANG[lang] });
       blob = await fetchBlob(audio.src);
     }
-  } catch (e) {}
+  } catch (e) { puterVoiceBroke = true; }
   if (!blob) blob = await fetchBlob('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=' + LANGCODE[lang] + '&q=' + encodeURIComponent(text.slice(0, 190)));
   if (!blob) return null;
   try { return await audioCtx.decodeAudioData(await blob.arrayBuffer()); } catch (e) { return null; }
@@ -473,7 +474,7 @@ async function makePuterClip(prompt, size) {
   try { v = await puter.ai.txt2vid(prompt, { ratio, aspect_ratio: ratio, duration: 5, seconds: 5, puter_output_path: path }); }
   catch (e) {
     saved = false;
-    try { v = await puter.ai.txt2vid(prompt); } catch (e2) { throw new Error('Puter : ' + puterErr(e2)); }
+    try { v = await puter.ai.txt2vid(prompt); } catch (e2) { { const msg = puterErr(e2); throw new Error(/credit|balance|funding/i.test(msg) ? 'Crédits Puter épuisés : choisis le mode « Agnes » ou « Sans crédit ».' : 'Puter : ' + msg); } }
   }
   const src = v && (v.src || (v.querySelector && v.querySelector('source') && v.querySelector('source').src));
   let blob = src ? await fetchBlob(src) : null;
@@ -498,11 +499,61 @@ async function buildSlot(slot) {
   cardStatus(slot.card, '✅ Scène prête' + (m !== mode ? ' (image animée)' : '')); showClip(slot.card, url, m);
 }
 function addRetry(slot) {
-  const b = document.createElement('button');
-  b.className = 'btn-blue'; b.style.cssText = 'margin:.5rem 0 0;padding:.6rem;font-size:.8rem';
-  b.textContent = '🔄 Refaire cette scène';
-  b.onclick = () => redoScene(slot);
-  slot.card.querySelector('.scene-content').appendChild(b);
+  const box = slot.card.querySelector('.scene-content');
+  const mk = (txt, cls, fn) => {
+    const b = document.createElement('button');
+    b.className = cls; b.style.cssText = 'margin:.4rem 0 0;padding:.6rem;font-size:.8rem';
+    b.textContent = txt; b.onclick = fn; box.appendChild(b); return b;
+  };
+  if (run.mode === 'manual') mk('📋 Copier le prompt (à coller dans Kling, PixVerse...)', 'btn-blue', async () => {
+    try { await navigator.clipboard.writeText(slot.scene.visual_prompt); alert('Prompt copié.'); }
+    catch (e) { prompt('Copie ce texte :', slot.scene.visual_prompt); }
+  });
+  else mk('🔄 Refaire cette scène', 'btn-blue', () => redoScene(slot));
+  const f = document.createElement('input');
+  f.type = 'file'; f.accept = 'video/*,image/*'; f.style.display = 'none';
+  f.onchange = () => importClip(slot, f.files[0]);
+  box.appendChild(f);
+  mk('📎 Utiliser ma vidéo ou mon image', 'btn-green', () => f.click());
+  const rb = mk('🎙️ Enregistrer ma voix', 'btn-green', () => toggleRec(slot, rb));
+}
+async function importClip(slot, file) {
+  if (!file) return;
+  const isImg = file.type.startsWith('image/');
+  slot.blob = file; slot.mode = isImg ? 'image' : 'video'; slot.url = URL.createObjectURL(file);
+  showClip(slot.card, slot.url, slot.mode);
+  cardStatus(slot.card, '✅ Ton fichier est utilisé');
+  if (!slot.voice) slot.voice = await fetchVoice(slot.scene.narration_text, run.lang, run.female);
+}
+let rec = null;
+async function toggleRec(slot, btn) {
+  if (rec && rec.state === 'recording') { rec.stop(); return; }
+  try {
+    const st = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const chunks = [];
+    rec = new MediaRecorder(st);
+    rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = async () => {
+      st.getTracks().forEach(t => t.stop());
+      btn.textContent = '🎙️ Réenregistrer ma voix';
+      try { slot.voice = await audioCtx.decodeAudioData(await new Blob(chunks).arrayBuffer()); cardStatus(slot.card, '✅ Ta voix est enregistrée'); }
+      catch (e) { cardStatus(slot.card, '❌ Enregistrement illisible, réessaie.'); }
+    };
+    rec.start();
+    btn.textContent = "⏹️ Arrêter l'enregistrement";
+  } catch (e) { alert("Le micro n'est pas autorisé."); }
+}
+function addAssembleBtn() {
+  const old = $('asmBtn'); if (old) old.remove();
+  const ab = document.createElement('button');
+  ab.id = 'asmBtn'; ab.className = 'btn-primary'; ab.textContent = '🎬 Assembler la vidéo';
+  ab.onclick = async () => {
+    ab.disabled = true;
+    try { await audioCtx.resume(); if (await assemble()) setStatus('✅ Vidéo terminée !'); }
+    catch (e) { setStatus('Erreur : ' + e.message, true); }
+    finally { ab.disabled = false; }
+  };
+  $('scenesContainer').appendChild(ab);
 }
 async function assemble() {
   const items = run.slots.filter(x => x.blob).map((x, i) => ({ idx: i, text: x.scene.narration_text, blob: x.blob, voice: x.voice, mode: x.mode || run.mode }));
@@ -548,6 +599,12 @@ async function generateMedia() {
   run = { key, mode, size, fmt, lang, agent, styleKey, female: (styleKey === 'sport' || styleKey === 'trailer') ? false : (!agent || /woman/i.test(agent)), slots: [] };
   try {
     scenes.forEach(sc => run.slots.push({ scene: { narration_text: sc.narration_text, visual_prompt: sc.visual_prompt }, card: addCard(sc.narration_text, fmt) }));
+    if (mode === 'manual') {
+      run.slots.forEach(sl => { cardStatus(sl.card, 'À remplir : ajoute ta vidéo ou ton image'); addRetry(sl); });
+      addAssembleBtn();
+      setStatus("Mode sans crédit : crée un clip gratuit pour chaque scène dans l'app de ton choix (copie le prompt), ajoute-le ici, enregistre ta voix si tu veux, puis assemble.");
+      return;
+    }
     let next = 0, done = 0;
     setStatus('Génération de ' + run.slots.length + ' scène(s)...');
     const worker = async () => {
@@ -561,6 +618,7 @@ async function generateMedia() {
     if (!run.slots.some(x => x.url)) throw new Error("Aucune scène n'a pu être générée (service Agnes indisponible ou quota atteint). Réessaie dans quelques minutes avec « Refaire cette scène ».");
     if (run.slots.some(x => x.blob) && run.slots.every(x => !x.voice)) alert("La voix n'a pas pu être chargée : la vidéo aura des sous-titres mais pas de voix. Touche « Se connecter à Puter », connecte-toi une fois, puis relance.");
     if (await assemble()) setStatus('✅ Vidéo terminée ! Une scène ne te plaît pas ? Utilise « Refaire cette scène ».');
+    addAssembleBtn();
   } catch (e) { setStatus('Erreur : ' + e.message, true); }
   finally { try { wake && wake.release(); } catch (e) {} btn.disabled = false; btn.textContent = '2. Générer la vidéo'; }
 }
