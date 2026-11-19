@@ -120,6 +120,7 @@ button:disabled{opacity:.6}
     <div class="check"><input type="checkbox" id="musicToggle" checked><span>Musique de fond douce</span></div>
 
     <button id="generateBtn" class="btn-primary" onclick="generateScript()">1. Écrire le scénario</button>
+    <button class="btn-green" onclick="express()">⚡ Express : tout en un clic</button>
   </div>
 
   <div id="scenarioCard" class="card" style="display:none">
@@ -228,7 +229,7 @@ async function agnesFetch(url, opts, tries = 4) {
     if (r.ok) return r;
     const body = await r.text().catch(() => '');
     lastErr = new Error('Agnes ' + r.status + ' : ' + body.slice(0, 200));
-    if ([408, 429, 500, 502, 503, 504, 520, 522, 524].includes(r.status)) { await sleep(10000 * (i + 1)); continue; }
+    if ([408, 429, 500, 502, 503, 504, 520, 522, 524].includes(r.status) && !/get_channel_failed|temporarily unavailable/i.test(body)) { await sleep(10000 * (i + 1)); continue; }
     throw lastErr;
   }
   throw lastErr;
@@ -344,6 +345,10 @@ function showClip(card, url, mode) {
 
 let scenes = [];
 
+async function express() {
+  if (await generateScript()) generateMedia();
+}
+
 async function generateScript() {
   const key = $('agnesApiKey').value.trim(), topic = $('topicInput').value.trim();
   if (!key || !topic) { alert('Ajoute ta clé API et décris ta vidéo.'); return; }
@@ -357,7 +362,8 @@ async function generateScript() {
     renderScenario();
     $('scenarioCard').style.display = 'block';
     $('scenarioCard').scrollIntoView({ behavior: 'smooth' });
-  } catch (e) { alert('Erreur : ' + e.message); }
+    return true;
+  } catch (e) { alert('Erreur : ' + e.message); return false; }
   finally { btn.disabled = false; btn.textContent = '1. Écrire le scénario'; }
 }
 
@@ -419,11 +425,16 @@ let run = null;
 async function buildSlot(slot) {
   const { key, mode, size, fmt, agent } = run, sc = slot.scene;
   cardStatus(slot.card, 'Génération...');
+  const voiceP = slot.voice ? Promise.resolve(slot.voice) : fetchVoice(sc.narration_text, run.lang, run.female);
   const vp = (agent && !String(sc.visual_prompt).includes(agent) ? agent + '. ' : '') + sc.visual_prompt + '. ' + fmt.style + (mode === 'video' ? ', realistic motion.' : '.');
-  const url = mode === 'video' ? await makeClip(key, vp, size, sec => cardStatus(slot.card, 'Génération... ' + sec + ' s')) : await makeImage(key, vp, size);
-  slot.url = url; slot.blob = await fetchBlob(url);
-  if (slot.blob && !slot.voice) slot.voice = await fetchVoice(sc.narration_text, run.lang, run.female);
-  cardStatus(slot.card, '✅ Scène prête'); showClip(slot.card, url, mode);
+  let url, m = mode;
+  if (mode === 'video') {
+    try { url = await makeClip(key, vp, size, sec => cardStatus(slot.card, 'Génération... ' + sec + ' s')); }
+    catch (e) { cardStatus(slot.card, 'Vidéo IA indisponible, image animée à la place...'); m = 'image'; url = await makeImage(key, vp, size); }
+  } else url = await makeImage(key, vp, size);
+  slot.url = url; slot.mode = m; slot.blob = await fetchBlob(url);
+  slot.voice = await voiceP;
+  cardStatus(slot.card, '✅ Scène prête' + (m !== mode ? ' (image animée)' : '')); showClip(slot.card, url, m);
 }
 function addRetry(slot) {
   const b = document.createElement('button');
@@ -433,7 +444,7 @@ function addRetry(slot) {
   slot.card.querySelector('.scene-content').appendChild(b);
 }
 async function assemble() {
-  const items = run.slots.filter(x => x.blob).map(x => ({ text: x.scene.narration_text, blob: x.blob, voice: x.voice, mode: run.mode }));
+  const items = run.slots.filter(x => x.blob).map(x => ({ text: x.scene.narration_text, blob: x.blob, voice: x.voice, mode: x.mode || run.mode }));
   if (!items.length) { setStatus('Les scènes sont prêtes mais le navigateur ne peut pas les assembler (accès bloqué par le serveur). Ouvre-les une par une pour les télécharger.', true); return false; }
   setStatus('Assemblage de la vidéo finale... Garde cet écran ouvert.');
   await renderFinal(items, run.size, run.fmt);
@@ -469,13 +480,17 @@ async function generateMedia() {
   try { if (navigator.wakeLock) wake = await navigator.wakeLock.request('screen'); } catch (e) {}
   run = { key, mode, size, fmt, lang, agent, female: !agent || /woman/i.test(agent), slots: [] };
   try {
-    for (let i = 0; i < scenes.length; i++) {
-      const slot = { scene: { narration_text: scenes[i].narration_text, visual_prompt: scenes[i].visual_prompt }, card: addCard(scenes[i].narration_text, fmt) };
-      run.slots.push(slot);
-      setStatus('Scène ' + (i + 1) + '/' + scenes.length + ' en cours...');
-      try { await buildSlot(slot); } catch (e) { cardStatus(slot.card, '❌ ' + e.message); }
-      addRetry(slot);
-    }
+    scenes.forEach(sc => run.slots.push({ scene: { narration_text: sc.narration_text, visual_prompt: sc.visual_prompt }, card: addCard(sc.narration_text, fmt) }));
+    let next = 0, done = 0;
+    setStatus('Génération de ' + run.slots.length + ' scène(s)...');
+    const worker = async () => {
+      while (next < run.slots.length) {
+        const slot = run.slots[next++];
+        try { await buildSlot(slot); } catch (e) { cardStatus(slot.card, '❌ ' + e.message); }
+        addRetry(slot); setStatus('Scènes terminées : ' + (++done) + '/' + run.slots.length);
+      }
+    };
+    await Promise.all(Array.from({ length: mode === 'video' ? 1 : 3 }, worker));
     if (!run.slots.some(x => x.url)) throw new Error("Aucune scène n'a pu être générée. Vérifie ta clé et ton quota.");
     if (run.slots.some(x => x.blob) && run.slots.every(x => !x.voice)) alert("La voix n'a pas pu être chargée : la vidéo aura des sous-titres mais pas de voix.");
     if (await assemble()) setStatus('✅ Vidéo terminée ! Une scène ne te plaît pas ? Utilise « Refaire cette scène ».');
@@ -551,7 +566,7 @@ async function renderFinal(items, size, fmt) {
     if (!isImg) { v.muted = true; v.playsInline = true; v.loop = true; }
     v.src = URL.createObjectURL(it.blob);
     await new Promise(r => { v.onloadedmetadata = r; v.onload = r; v.onerror = r; setTimeout(r, 4000); });
-    const vd = isImg ? 5 : (isFinite(v.duration) && v.duration > 0 ? v.duration : 5);
+    const vd = isImg ? 3 : (isFinite(v.duration) && v.duration > 0 ? v.duration : 5);
     const dur = Math.max(vd, it.voice ? it.voice.duration + 0.4 : 0) * 1000;
     if (!isImg) await v.play().catch(() => {});
     if (it.voice) { const s = audioCtx.createBufferSource(); s.buffer = it.voice; s.connect(dest); s.start(); }
